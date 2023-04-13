@@ -6,6 +6,4 @@ import ru.otus.spring.domain.Task;
 public interface TaskService {
 
   List<Task> getAll();
-
-  void save(Task task);
 }

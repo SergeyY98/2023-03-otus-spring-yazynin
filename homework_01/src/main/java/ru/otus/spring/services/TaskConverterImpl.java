@@ -7,14 +7,12 @@ public class TaskConverterImpl implements TaskConverter {
 
   @Override
   public String convertTaskToString(int taskNumber, Task task) {
-    StringBuilder builder = new StringBuilder();
     String[] answers = task.getAnswers();
-    builder.append(taskNumber + ". " + task.getQuestion() + "\n");
+    String taskString = taskNumber + ". " + task.getQuestion() + "\n";
     for (var answerNumber = 0; answerNumber < answers.length; answerNumber++) {
-      builder.append((answerNumber + 1) + ") " + answers[answerNumber] + " ");
+      taskString = taskString.concat((answerNumber + 1) + ") " + answers[answerNumber] + " ");
     }
-    String s = builder.toString();
-    return s;
+    return taskString;
   }
 
   @Override

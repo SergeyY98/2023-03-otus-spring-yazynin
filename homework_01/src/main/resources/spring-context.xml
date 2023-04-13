@@ -4,16 +4,23 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="classPathResource" class="org.springframework.core.io.ClassPathResource">
-        <constructor-arg index="0" value="tasks.csv"/>
-    </bean>
+    <bean id="taskConverter" class="ru.otus.spring.services.TaskConverterImpl"/>
 
-    <bean id="taskDao" class="ru.otus.spring.dao.TaskDaoImpl"/>
+    <bean id="ioService" class="ru.otus.spring.services.IOServiceStreams"/>
+
+    <bean id="taskDao" class="ru.otus.spring.dao.TaskDaoImpl">
+        <constructor-arg index="0" value="tasks.csv"/>
+        <constructor-arg index="1" ref="taskConverter"/>
+    </bean>
 
     <bean id="taskService" class="ru.otus.spring.services.TaskServiceImpl">
         <constructor-arg index="0" ref="taskDao"/>
     </bean>
 
-    <bean id="tasksConverter" class="ru.otus.spring.services.TaskConverterImpl"/>
+    <bean id="applicationRunner" class="ru.otus.spring.services.ApplicationRunner">
+        <constructor-arg index="0" ref="ioService"/>
+        <constructor-arg index="1" ref="taskService"/>
+        <constructor-arg index="2" ref="taskConverter"/>
+    </bean>
 
 </beans>

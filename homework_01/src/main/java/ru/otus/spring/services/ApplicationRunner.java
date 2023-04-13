@@ -1,7 +1,6 @@
 package ru.otus.spring.services;
 
 import java.util.stream.IntStream;
-import ru.otus.spring.domain.Task;
 
 public class ApplicationRunner {
   private final IOService ioService;
@@ -18,16 +17,7 @@ public class ApplicationRunner {
   }
 
   public void run() {
-    inputTasks();
     outputTasks();
-  }
-
-  private void inputTasks() {
-    String line;
-    while ((line = ioService.readString()) != "") {
-      Task task = taskConverter.convertStringToTask(line);
-      tasksService.save(task);
-    }
   }
 
   private void outputTasks() {

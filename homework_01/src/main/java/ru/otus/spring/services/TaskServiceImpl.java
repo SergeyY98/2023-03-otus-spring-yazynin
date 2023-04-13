@@ -17,9 +17,4 @@ public class TaskServiceImpl implements TaskService {
   public List<Task> getAll() {
     return taskDao.getAll();
   }
-
-  @Override
-  public void save(final Task task) {
-    taskDao.save(task);
-  }
 }
