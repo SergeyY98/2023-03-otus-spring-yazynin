@@ -1,5 +1,6 @@
 package ru.otus.spring.domain;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Task {
@@ -7,15 +8,15 @@ public class Task {
 
   private final String question;
 
-  private final String[] answers;
+  private final List<Answer> answers;
 
-  public Task(String question, String[] answers) {
+  public Task(String question, List<Answer> answers) {
     this.id = UUID.randomUUID().toString();
     this.question = question;
     this.answers = answers;
   }
 
-  public Task(String id, String question, String[] answers) {
+  public Task(String id, String question, List<Answer> answers) {
     this.id = id;
     this.question = question;
     this.answers = answers;
@@ -29,7 +30,7 @@ public class Task {
     return question;
   }
 
-  public String[] getAnswers() {
+  public List<Answer> getAnswers() {
     return answers;
   }
 

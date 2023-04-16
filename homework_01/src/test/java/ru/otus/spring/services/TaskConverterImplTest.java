@@ -7,8 +7,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.otus.spring.domain.Answer;
 import ru.otus.spring.domain.Task;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +34,11 @@ public class TaskConverterImplTest {
   @Test
   void shouldCorrectConvertTaskToString() {
     String question = "A";
-    String[] answers = {"B", "C", "D", "E"};
+    List<String> answerTexts = Arrays.asList("B", "C", "D", "E");
+    List<Answer> answers = new ArrayList<>();
+    for (var answerNumber = 0; answerNumber < answerTexts.size(); answerNumber++) {
+      answers.add(new Answer(answerTexts.get(answerNumber), answerNumber == 0));
+    }
     Task task = new Task(question, answers);
     assertThat(taskConverter.convertTaskToString(1, task)).startsWith("1");
   }

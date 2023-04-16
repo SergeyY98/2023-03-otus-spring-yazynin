@@ -1,5 +1,7 @@
 package ru.otus.spring.services;
 
+import ru.otus.spring.exceptions.DataLoadingException;
+
 import java.util.stream.IntStream;
 
 public class ApplicationRunner {
@@ -16,14 +18,18 @@ public class ApplicationRunner {
     this.taskConverter = taskConverter;
   }
 
-  public void run() {
+  public void run(){
     outputTasks();
   }
 
-  private void outputTasks() {
-    var tasks = tasksService.getAll();
-    IntStream.range(1, tasks.size() + 1)
-        .mapToObj(k -> taskConverter.convertTaskToString(k, tasks.get(k - 1)))
-        .forEach(ioService::outputString);
+  private void outputTasks(){
+    try {
+      var tasks = tasksService.getAll();
+      IntStream.range(1, tasks.size() + 1)
+          .mapToObj(k -> taskConverter.convertTaskToString(k, tasks.get(k - 1)))
+          .forEach(ioService::outputString);
+    } catch (DataLoadingException e) {
+      ioService.outputString("Ошибка при загрузке данных");
+    }
   }
 }
