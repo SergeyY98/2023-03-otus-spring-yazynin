@@ -4,7 +4,6 @@ import java.util.List;
 
 import ru.otus.spring.dao.TaskDao;
 import ru.otus.spring.domain.Task;
-import ru.otus.spring.exceptions.DataLoadingException;
 
 public class TaskServiceImpl implements TaskService {
 
@@ -15,7 +14,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> getAll() throws DataLoadingException {
+  public List<Task> getAll() {
     return taskDao.getAll();
   }
 }

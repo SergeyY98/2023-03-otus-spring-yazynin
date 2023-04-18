@@ -29,7 +29,9 @@ public class ApplicationRunner {
           .mapToObj(k -> taskConverter.convertTaskToString(k, tasks.get(k - 1)))
           .forEach(ioService::outputString);
     } catch (DataLoadingException e) {
-      ioService.outputString("Ошибка при загрузке данных");
+      ioService.outputString("Data loading error");
+    } catch (IllegalArgumentException e) {
+      ioService.outputString("Data format error");
     }
   }
 }

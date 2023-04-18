@@ -22,7 +22,7 @@ public class TaskDaoImpl implements TaskDao {
   }
 
   @Override
-  public List<Task> getAll() throws DataLoadingException {
+  public List<Task> getAll() {
     var resource = new ClassPathResource(fileName);
     var tasks = new ArrayList<Task>();
     try (Scanner scanner = new Scanner(resource.getInputStream())) {
