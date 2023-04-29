@@ -7,6 +7,4 @@ import java.util.List;
 public interface TaskDao {
 
   List<Task> getAll();
-
-  int getPassedScore();
 }

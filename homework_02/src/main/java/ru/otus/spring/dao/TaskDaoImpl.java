@@ -1,5 +1,6 @@
 package ru.otus.spring.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.domain.Task;
@@ -18,12 +19,10 @@ public class TaskDaoImpl implements TaskDao {
 
   private final TaskConverter taskConverter;
 
-  private final int passedScore;
-
-  public TaskDaoImpl(String fileName, TaskConverter taskConverter, int passedScore) {
+  @Autowired
+  public TaskDaoImpl(String fileName, TaskConverter taskConverter) {
     this.fileName = fileName;
     this.taskConverter = taskConverter;
-    this.passedScore = passedScore;
   }
 
   @Override
@@ -39,10 +38,5 @@ public class TaskDaoImpl implements TaskDao {
       throw new DataLoadingException("Resource reading error", e.getCause());
     }
     return tasks;
-  }
-
-  @Override
-  public int getPassedScore() {
-    return passedScore;
   }
 }

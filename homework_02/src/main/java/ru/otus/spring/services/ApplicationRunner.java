@@ -6,22 +6,27 @@ import ru.otus.spring.domain.Student;
 import ru.otus.spring.exceptions.AnswerIndexOutOfBoundsException;
 import ru.otus.spring.exceptions.DataLoadingException;
 
-import static ru.otus.spring.services.processors.utils.AnswerListUtil.checkAnswerNumber;
-
 @Service
 public class ApplicationRunner {
   private final IOService ioService;
 
-  private final TaskService tasksService;
+  private final TaskService taskService;
 
   private final TaskConverter taskConverter;
 
+  private final AnswerService answerService;
+
+  private final int passedScore;
+
   @Autowired
-  public ApplicationRunner(IOService ioService, TaskService tasksService,
-                           TaskConverter taskConverter) {
+  public ApplicationRunner(IOService ioService, TaskService taskService,
+                           TaskConverter taskConverter, AnswerService answerService,
+                           int passedScore) {
     this.ioService = ioService;
-    this.tasksService = tasksService;
+    this.taskService = taskService;
     this.taskConverter = taskConverter;
+    this.answerService = answerService;
+    this.passedScore = passedScore;
   }
 
   public void run(){
@@ -43,21 +48,21 @@ public class ApplicationRunner {
     try {
       var index = 0;
       var correctAnswerNum = 0;
-      var tasks = tasksService.getAll();
+      var tasks = taskService.getAll();
       while (index < tasks.size()) {
         var answerNum = ioService.readIntWithPrompt(taskConverter.convertTaskToString(index + 1, tasks.get(index)));
         var answers = tasks.get(index).getAnswers();
         try {
-          checkAnswerNumber(answerNum, answers.size());
+          answerService.checkAnswerNumber(answerNum, answers.size());
           correctAnswerNum += answers.get(answerNum-1).getCorrectness()? 1: 0;
           index++;
         } catch (AnswerIndexOutOfBoundsException e) {
           ioService.outputString("Enter correct number");
         }
       }
+      var result = passedScore<=correctAnswerNum?"passed":"failed";
       ioService.outputString("Score: " + correctAnswerNum + "/" + tasks.size());
-      ioService.outputString(student.getName() + " " + student.getSurname() + " "
-          + tasksService.getResult(correctAnswerNum) + " the test");
+      ioService.outputString(student.getName() + " " + student.getSurname() + " " + result);
     } catch (DataLoadingException e) {
       ioService.outputString("Data loading error");
     } catch (IllegalArgumentException e) {

@@ -21,9 +21,4 @@ public class TaskServiceImpl implements TaskService {
   public List<Task> getAll() {
     return taskDao.getAll();
   }
-
-  @Override
-  public String getResult(int score) {
-    return taskDao.getPassedScore() <= score?"passed":"failed";
-  }
 }
