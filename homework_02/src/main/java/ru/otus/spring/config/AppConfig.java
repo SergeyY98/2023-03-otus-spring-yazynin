@@ -25,6 +25,6 @@ public class AppConfig {
   public ApplicationRunner applicationRunner(IOService ioService, TaskService taskService,
                                              TaskConverter taskConverter, AnswerService answerService,
                                              @Value("${passed.score}") int passedScore) {
-    return new ApplicationRunner(ioService, taskService, taskConverter, answerService, passedScore);
+    return new ApplicationRunner(ioService, taskService, answerService, taskConverter, passedScore);
   }
 }
