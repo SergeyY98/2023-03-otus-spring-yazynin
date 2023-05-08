@@ -1,5 +1,6 @@
 package ru.otus.spring.services;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,5 +58,13 @@ public class TaskConverterImplTest {
         .sorted(Comparator.comparing(Answer::getText))
         .map(Answer::getText).toList())
         .isEqualTo(answerTexts);
+  }
+
+  @DisplayName("Must convert task to string correctly")
+  @Test
+  void shouldThrowException() {
+    Assertions.assertThrows(IllegalArgumentException.class, () ->
+      taskConverter.convertStringToTask(";")
+    );
   }
 }
