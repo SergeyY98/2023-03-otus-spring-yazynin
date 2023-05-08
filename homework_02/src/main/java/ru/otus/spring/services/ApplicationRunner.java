@@ -2,7 +2,6 @@ package ru.otus.spring.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.otus.spring.domain.Student;
 import ru.otus.spring.domain.Task;
 import ru.otus.spring.exceptions.AnswerIndexOutOfBoundsException;
 import ru.otus.spring.exceptions.DataLoadingException;
@@ -17,41 +16,23 @@ public class ApplicationRunner {
 
   private final TaskConverter taskConverter;
 
-  private final int passedScore;
+  private final StudentService studentService;
 
   @Autowired
   public ApplicationRunner(IOService ioService, TaskService taskService,
                            AnswerService answerService, TaskConverter taskConverter,
-                           int passedScore) {
+                           StudentService studentService) {
     this.ioService = ioService;
     this.taskService = taskService;
     this.answerService = answerService;
     this.taskConverter = taskConverter;
-    this.passedScore = passedScore;
+    this.studentService = studentService;
   }
 
   public void run(){
-    var student = enterStudentCredentials();
-    var score = makeTest(student);
-    printTestResult(student, score);
-  }
-
-  private Student enterStudentCredentials() {
-    boolean loop = true;
-    String name = "";
-    String surname = "";
-    while (loop) {
-      try {
-        var credentials = ioService.readStringWithPrompt("Please enter your name and surname")
-            .split(" ");
-        name = credentials[0];
-        surname = credentials[1];
-        loop = false;
-      } catch (ArrayIndexOutOfBoundsException e) {
-        ioService.outputString("Credentials are incorrect");
-      }
-    }
-    return new Student(name, surname);
+    var student = studentService.createStudent();
+    var score = makeTest();
+    studentService.returnStudentResult(student, score);
   }
 
   private int getTaskResult(int index, Task task) {
@@ -71,7 +52,7 @@ public class ApplicationRunner {
     return answers.get(answerNum-1).getCorrectness()?1:0;
   }
 
-  private int makeTest(Student student) {
+  private int makeTest() {
     var score = 0;
     try {
       var tasks = taskService.getAll();
@@ -85,11 +66,5 @@ public class ApplicationRunner {
       ioService.outputString("Data format error");
     }
     return score;
-  }
-
-  private void printTestResult(Student student, int score) {
-    var result = passedScore<=score?"passed":"failed";
-    ioService.outputString("Score: " + score + " Needed: " + passedScore);
-    ioService.outputString(student.getName() + " " + student.getSurname() + " " + result);
   }
 }

@@ -10,6 +10,7 @@ import ru.otus.spring.domain.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,23 +19,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class TaskConverterImplTest {
 
+  private Task task;
+
+  private String question;
+
+  private List<String> answerTexts;
+
   private TaskConverterImpl taskConverter;
 
   @BeforeEach
   void setUp() {
     taskConverter = new TaskConverterImpl();
+    question = "A";
+    answerTexts = Arrays.asList("B", "C", "D", "E");
+    List<Answer> answers = new ArrayList<>();
+    for (var answerNumber = 0; answerNumber < answerTexts.size(); answerNumber++) {
+      answers.add(new Answer(answerTexts.get(answerNumber), answerNumber == 0));
+    }
+    task = new Task(question, answers);
   }
 
   @DisplayName("Must convert task to string correctly")
   @Test
   void shouldCorrectConvertTaskToString() {
-    String question = "A";
-    List<String> answerTexts = Arrays.asList("B", "C", "D", "E");
-    List<Answer> answers = new ArrayList<>();
-    for (var answerNumber = 0; answerNumber < answerTexts.size(); answerNumber++) {
-      answers.add(new Answer(answerTexts.get(answerNumber), answerNumber == 0));
-    }
-    Task task = new Task(question, answers);
-    assertThat(taskConverter.convertTaskToString(1, task)).startsWith("1");
+    String taskString = "A;B;C;D;E";
+    assertThat(taskConverter.convertTaskToString(1, task)).startsWith("1. A\n" +
+        "1) B 2) C 3) D 4) E");
+  }
+
+  @DisplayName("Must convert task to string correctly")
+  @Test
+  void shouldCorrectConvertStringToTask() {
+    String taskString = "A;B;C;D;E";
+    Task task = taskConverter.convertStringToTask(taskString);
+    assertThat(task.getQuestion()).isEqualTo(question);
+    assertThat(task.getAnswers().stream()
+        .sorted(Comparator.comparing(Answer::getText))
+        .map(Answer::getText).toList())
+        .isEqualTo(answerTexts);
   }
 }

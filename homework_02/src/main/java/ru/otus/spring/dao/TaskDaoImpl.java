@@ -1,6 +1,7 @@
 package ru.otus.spring.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.domain.Task;
@@ -20,7 +21,7 @@ public class TaskDaoImpl implements TaskDao {
   private final TaskConverter taskConverter;
 
   @Autowired
-  public TaskDaoImpl(String fileName, TaskConverter taskConverter) {
+  public TaskDaoImpl(@Value("${resource.name}") String fileName, TaskConverter taskConverter) {
     this.fileName = fileName;
     this.taskConverter = taskConverter;
   }

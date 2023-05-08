@@ -3,8 +3,10 @@ package ru.otus.spring;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import ru.otus.spring.services.ApplicationRunner;
 
+@PropertySource("classpath:application.properties")
 @Configuration
 @ComponentScan
 public class Main {
