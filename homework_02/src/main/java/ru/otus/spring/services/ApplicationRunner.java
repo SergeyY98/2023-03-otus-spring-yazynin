@@ -32,7 +32,7 @@ public class ApplicationRunner {
   public void run(){
     var student = studentService.createStudent();
     var score = makeTest();
-    studentService.returnStudentResult(student, score);
+    studentService.checkStudentResult(student, score);
   }
 
   private int getTaskResult(int index, Task task) {

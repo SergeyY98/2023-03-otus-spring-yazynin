@@ -1,7 +1,6 @@
 package ru.otus.spring.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.domain.Student;
 
@@ -10,12 +9,12 @@ public class StudentServiceImpl implements StudentService {
 
   private final IOService ioService;
 
-  private final int passedScore;
+  private final ResultService resultService;
 
   @Autowired
-  public StudentServiceImpl(IOService ioService, @Value("${passed.score}") int passedScore) {
+  public StudentServiceImpl(IOService ioService, ResultService resultService) {
     this.ioService = ioService;
-    this.passedScore = passedScore;
+    this.resultService = resultService;
   }
 
   @Override
@@ -38,9 +37,10 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  public void returnStudentResult(Student student, int score) {
-    var result = passedScore <= score ? "passed" : "failed";
-    ioService.outputString("Score: " + score + " Needed: " + passedScore);
-    ioService.outputString(student.getName() + " " + student.getSurname() + " " + result);
+  public void checkStudentResult(Student student, int score) {
+    ioService.outputString(String.format("%s %s your result:%s%s", student.getName(),
+        student.getSurname(),
+        System.lineSeparator(),
+        resultService.returnResult(score)));
   }
 }

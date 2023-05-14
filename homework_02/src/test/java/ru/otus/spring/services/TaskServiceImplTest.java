@@ -13,7 +13,7 @@ import ru.otus.spring.domain.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Adding new task")
@@ -40,6 +40,6 @@ public class TaskServiceImplTest {
         .willReturn(task);
 
     var tasks = taskService.getAll();
-    assertTrue(tasks.contains(task.get(0)));
+      assertThat(tasks).containsExactlyElementsOf(task);
   }
 }

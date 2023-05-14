@@ -15,7 +15,7 @@ public class TaskConverterImpl implements TaskConverter {
   @Override
   public String convertTaskToString(int taskNumber, Task task) {
     List<Answer> answers = task.getAnswers();
-    String taskString = taskNumber + ". " + task.getQuestion() + "\n";
+    String taskString = taskNumber + ". " + task.getQuestion() + System.lineSeparator();
     for (var answerNumber = 0; answerNumber < answers.size(); answerNumber++) {
       taskString = taskString.concat((answerNumber + 1) + ") " + answers.get(answerNumber).getText() + " ");
     }

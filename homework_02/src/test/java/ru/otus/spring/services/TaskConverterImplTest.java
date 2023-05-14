@@ -43,9 +43,8 @@ public class TaskConverterImplTest {
   @DisplayName("Must convert task to string correctly")
   @Test
   void shouldCorrectConvertTaskToString() {
-    String taskString = "A;B;C;D;E";
-    assertThat(taskConverter.convertTaskToString(1, task)).startsWith("1. A\n" +
-        "1) B 2) C 3) D 4) E");
+    assertThat(taskConverter.convertTaskToString(1, task))
+        .contains(String.format("1. A%s1) B 2) C 3) D 4) E ", System.lineSeparator()));
   }
 
   @DisplayName("Must convert task to string correctly")
