@@ -8,16 +8,19 @@ import ru.otus.spring.domain.Result;
 @Service
 public class ResultServceImpl implements ResultService {
 
+  private final IOService ioService;
+
   private final int passedScore;
 
   @Autowired
-  public ResultServceImpl(@Value("${passed.score}") int passedScore) {
+  public ResultServceImpl(IOService ioService, @Value("${passed.score}") int passedScore) {
+    this.ioService = ioService;
     this.passedScore = passedScore;
   }
 
   @Override
-  public String returnResult(int score) {
+  public void print(int score) {
     var result = new Result(score, passedScore);
-    return String.format("%d/%d %s", score, passedScore, result.getStatus());
+    ioService.outputString(String.format("Answered: %d Needed: %d Result: %s", score, passedScore, result.getStatus()));
   }
 }

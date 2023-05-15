@@ -9,12 +9,9 @@ public class StudentServiceImpl implements StudentService {
 
   private final IOService ioService;
 
-  private final ResultService resultService;
-
   @Autowired
-  public StudentServiceImpl(IOService ioService, ResultService resultService) {
+  public StudentServiceImpl(IOService ioService) {
     this.ioService = ioService;
-    this.resultService = resultService;
   }
 
   @Override
@@ -34,13 +31,5 @@ public class StudentServiceImpl implements StudentService {
       }
     }
     return new Student(name, surname);
-  }
-
-  @Override
-  public void checkStudentResult(Student student, int score) {
-    ioService.outputString(String.format("%s %s your result:%s%s", student.getName(),
-        student.getSurname(),
-        System.lineSeparator(),
-        resultService.returnResult(score)));
   }
 }
