@@ -1,5 +1,7 @@
 package ru.otus.spring.services;
 
+import ru.otus.spring.domain.Result;
+
 public interface ResultService {
-  void print(int score);
+  void print(Result result);
 }

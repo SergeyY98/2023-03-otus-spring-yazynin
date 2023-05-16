@@ -2,6 +2,8 @@ package ru.otus.spring.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.otus.spring.domain.Result;
+import ru.otus.spring.domain.Student;
 import ru.otus.spring.exceptions.DataLoadingException;
 
 @Service
@@ -25,11 +27,11 @@ public class ApplicationRunner {
 
   public void run(){
     var student = studentService.createStudent();
-    var result = makeTest();
+    var result = makeTest(student);
     resultService.print(result);
   }
 
-  private int makeTest() {
+  private Result makeTest(Student student) {
     var score = 0;
     try {
       var tasks = taskService.getAll();
@@ -42,6 +44,6 @@ public class ApplicationRunner {
     } catch (IllegalArgumentException e) {
       ioService.outputString("Data format error");
     }
-    return score;
+    return new Result(student, score);
   }
 }

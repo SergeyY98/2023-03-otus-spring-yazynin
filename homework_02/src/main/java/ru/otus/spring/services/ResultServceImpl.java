@@ -19,8 +19,9 @@ public class ResultServceImpl implements ResultService {
   }
 
   @Override
-  public void print(int score) {
-    var result = new Result(score, passedScore);
-    ioService.outputString(String.format("Answered: %d Needed: %d Result: %s", score, passedScore, result.getStatus()));
+  public void print(Result result) {
+    ioService.outputString(String.format("%s %s answered: %d needed: %d result: %s", result.getStudent().getName(),
+        result.getStudent().getSurname(), result.getScore(),
+        passedScore, passedScore <= result.getScore() ? "passed" : "failed"));
   }
 }
