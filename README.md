@@ -2,4 +2,5 @@
 Otus homework
 
 1. Введение в Spring Framework
-2. Конфигурирование Spring-приложений 
+2. Конфигурирование Spring-приложений
+3. "Чёрная магия" Spring Boot
