@@ -16,13 +16,17 @@ public class ApplicationRunner {
 
   private final ResultService resultService;
 
+  private final MessageService messageService;
+
   @Autowired
   public ApplicationRunner(IOService ioService, TaskService taskService,
-                           StudentService studentService, ResultService resultService) {
+                           StudentService studentService, ResultService resultService,
+                           MessageService messageService) {
     this.ioService = ioService;
     this.taskService = taskService;
     this.studentService = studentService;
     this.resultService = resultService;
+    this.messageService = messageService;
   }
 
   public void run(){
@@ -40,9 +44,9 @@ public class ApplicationRunner {
         score += taskService.getTaskResult(i, task);
       }
     } catch (DataLoadingException e) {
-      ioService.outputString("Data loading error");
+      ioService.outputString(messageService.getMessage("loadingErrorMsg"));
     } catch (IllegalArgumentException e) {
-      ioService.outputString("Data format error");
+      ioService.outputString(messageService.getMessage("formatErrorMsg"));
     }
     return new Result(student, score);
   }

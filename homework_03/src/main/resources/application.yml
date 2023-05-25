@@ -4,5 +4,6 @@ spring:
     encoding: "UTF-8"
 
 application:
-  message: "3"
+  fileName: "tasks.csv"
+  limitScore: 3
   locale: ru_RU

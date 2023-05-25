@@ -19,13 +19,17 @@ public class TaskServiceImpl implements TaskService {
 
   private final TaskConverter taskConverter;
 
+  private final MessageService messageService;
+
   @Autowired
   public TaskServiceImpl(TaskDao taskDao, IOService ioService,
-                         AnswerService answerService, TaskConverter taskConverter) {
+                         AnswerService answerService, TaskConverter taskConverter,
+                         MessageService messageService) {
     this.taskDao = taskDao;
     this.ioService = ioService;
     this.answerService = answerService;
     this.taskConverter = taskConverter;
+    this.messageService = messageService;
   }
 
   @Override
@@ -45,7 +49,7 @@ public class TaskServiceImpl implements TaskService {
         answerService.checkAnswerNumber(answerNum, answers.size());
         loop = false;
       } catch (AnswerIndexOutOfBoundsException e) {
-        ioService.outputString("Enter correct number");
+        ioService.outputString(messageService.getMessage("answerIndexOutOfBoundsMsg"));
       }
     }
     return answers.get(answerNum-1).getCorrectness()?1:0;

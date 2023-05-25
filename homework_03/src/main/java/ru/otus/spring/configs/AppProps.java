@@ -7,16 +7,29 @@ import java.util.Locale;
 @ConfigurationProperties(prefix = "application")
 public class AppProps {
 
-  private String message;
+  private String fileName;
+
+  private int limitScore;
 
   private Locale locale;
 
-  public String getMessage() {
-    return message;
+  public int getLimitScore() {
+    return limitScore;
   }
 
-  public void setMessage(String message) {
-    this.message = message;
+  public void setLimitScore(int limitScore) {
+    this.limitScore = limitScore;
+  }
+
+  public String getFileName() {
+    if (!locale.toString().equals("")) {
+      fileName = fileName.replace(".", "_" + locale + ".");
+    }
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 
   public Locale getLocale() {

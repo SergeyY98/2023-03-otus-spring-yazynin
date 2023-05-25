@@ -1,9 +1,7 @@
 package ru.otus.spring.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import ru.otus.spring.configs.AppProps;
 import ru.otus.spring.domain.Student;
 
 @Service
@@ -11,15 +9,12 @@ public class StudentServiceImpl implements StudentService {
 
   private final IOService ioService;
 
-  private final MessageSource messageSource;
-
-  private final AppProps props;
+  private final MessageService messageService;
 
   @Autowired
-  public StudentServiceImpl(IOService ioService, MessageSource messageSource, AppProps props) {
+  public StudentServiceImpl(IOService ioService, MessageService messageService) {
     this.ioService = ioService;
-    this.messageSource = messageSource;
-    this.props = props;
+    this.messageService = messageService;
   }
 
   @Override
@@ -30,13 +25,12 @@ public class StudentServiceImpl implements StudentService {
     while (loop) {
       try {
         var credentials = ioService.readStringWithPrompt(
-            messageSource.getMessage("getCredentials", new String[]{}, props.getLocale()))
-            .split(" ");
+                messageService.getMessage("getCredentialsMsg")).split(" ");
         name = credentials[0];
         surname = credentials[1];
         loop = false;
       } catch (ArrayIndexOutOfBoundsException e) {
-        ioService.outputString(messageSource.getMessage("wrongCredentials", new String[]{}, props.getLocale()));
+        ioService.outputString(messageService.getMessage("wrongCredentialsMsg"));
       }
     }
     return new Student(name, surname);
