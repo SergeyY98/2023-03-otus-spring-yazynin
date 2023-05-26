@@ -1,11 +1,14 @@
 package ru.otus.spring.configs;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import ru.otus.spring.dao.TaskDao;
 import ru.otus.spring.dao.TaskDaoImpl;
+import ru.otus.spring.services.MessageService;
+import ru.otus.spring.services.MessageServiceImpl;
 import ru.otus.spring.services.TaskConverter;
 
 @Configuration
@@ -21,5 +24,10 @@ public class ApplicationConfig {
   @Bean
   public TaskDao taskDao(TaskConverter taskConverter) {
     return new TaskDaoImpl(new ClassPathResource(appProps.getFileName()), taskConverter);
+  }
+
+  @Bean
+  public MessageService messageService(MessageSource messageSource) {
+    return new MessageServiceImpl(messageSource, appProps.getLocale());
   }
 }
