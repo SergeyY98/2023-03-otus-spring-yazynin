@@ -1,9 +1,11 @@
 package ru.otus.spring.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
+@Component
 @ConfigurationProperties(prefix = "application")
 public class AppProps {
 

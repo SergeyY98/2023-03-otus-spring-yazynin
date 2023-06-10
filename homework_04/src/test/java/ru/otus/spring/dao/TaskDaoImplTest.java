@@ -5,8 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import ru.otus.spring.configs.ApplicationConfigTest;
 import ru.otus.spring.domain.Answer;
 import ru.otus.spring.domain.Task;
 
@@ -15,7 +13,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ContextConfiguration(classes=ApplicationConfigTest.class)
 public class TaskDaoImplTest {
 
   @Autowired
@@ -38,16 +35,16 @@ public class TaskDaoImplTest {
 
   private List<Task> prepareExpectedTasks() {
     var expectedTask1 = new Task(
-        "Question1",
-        List.of(new Answer("Answer11", true),
-            new Answer("Answer12", false),
-            new Answer("Answer13", false))
+        "Вопрос1",
+        List.of(new Answer("Ответ11", true),
+            new Answer("Ответ12", false),
+            new Answer("Ответ13", false))
     );
     var expectedTask2 = new Task(
-        "Question2",
-        List.of(new Answer("Answer21", true),
-            new Answer("Answer22", false),
-            new Answer("Answer23", false))
+        "Вопрос2",
+        List.of(new Answer("Ответ21", true),
+            new Answer("Ответ22", false),
+            new Answer("Ответ23", false))
     );
     return List.of(expectedTask1, expectedTask2);
   }

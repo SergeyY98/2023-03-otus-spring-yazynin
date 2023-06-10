@@ -2,10 +2,10 @@ package ru.otus.spring.services;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import ru.otus.spring.configs.ApplicationConfigTest;
+import ru.otus.spring.dao.TaskDao;
 import ru.otus.spring.domain.Answer;
 import ru.otus.spring.domain.Task;
 
@@ -17,13 +17,15 @@ import static org.mockito.BDDMockito.given;
 
 @DisplayName("Adding new task")
 @SpringBootTest
-@ContextConfiguration(classes= ApplicationConfigTest.class)
 public class TaskServiceImplTest {
 
-  @MockBean
-  private TaskServiceImpl taskService;
+  @Autowired
+  private TaskService taskService;
 
-  @DisplayName("должен возвращает ожидаеме задание")
+  @MockBean
+  private TaskDao taskDao;
+
+  @DisplayName("должен возвращать ожидаемое задание")
   @Test
   void shouldReturnTask() {
     var question = "test_question";

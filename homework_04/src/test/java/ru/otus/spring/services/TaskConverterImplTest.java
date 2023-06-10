@@ -4,12 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import ru.otus.spring.configs.ApplicationConfigTest;
 import ru.otus.spring.domain.Answer;
 import ru.otus.spring.domain.Task;
 
@@ -21,9 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Adding new task")
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
-@ContextConfiguration(classes= ApplicationConfigTest.class)
 public class TaskConverterImplTest {
 
   private Task task;
@@ -33,7 +27,7 @@ public class TaskConverterImplTest {
   private List<String> answerTexts;
 
   @Autowired
-  private TaskConverterImpl taskConverter;
+  private TaskConverter taskConverter;
 
   @BeforeEach
   void setUp() {
