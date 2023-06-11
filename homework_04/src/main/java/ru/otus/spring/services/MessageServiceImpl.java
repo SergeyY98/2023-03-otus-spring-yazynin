@@ -3,28 +3,28 @@ package ru.otus.spring.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import ru.otus.spring.configs.AppProps;
+import ru.otus.spring.configs.LocaleProvider;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
   private final MessageSource messageSource;
 
-  private final AppProps appProps;
+  private final LocaleProvider localeProvider;
 
   @Autowired
-  public MessageServiceImpl(MessageSource messageSource, AppProps appProps) {
+  public MessageServiceImpl(MessageSource messageSource, LocaleProvider localeProvider) {
     this.messageSource = messageSource;
-    this.appProps = appProps;
+    this.localeProvider = localeProvider;
   }
 
   @Override
   public String getMessage(String msgCode) {
-    return messageSource.getMessage(msgCode, null, appProps.getLocale());
+    return messageSource.getMessage(msgCode, null, localeProvider.getLocale());
   }
 
   @Override
   public String getMessage(String msgCode, String... strings) {
-    return messageSource.getMessage(msgCode, strings, appProps.getLocale());
+    return messageSource.getMessage(msgCode, strings, localeProvider.getLocale());
   }
 }

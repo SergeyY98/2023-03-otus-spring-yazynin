@@ -7,7 +7,7 @@ import java.util.Locale;
 
 @Component
 @ConfigurationProperties(prefix = "application")
-public class AppProps {
+public class AppProps implements FileNameProvider, LocaleProvider, LimitScoreProvider {
 
   private String fileName;
 
@@ -15,14 +15,17 @@ public class AppProps {
 
   private Locale locale;
 
+  @Override
   public int getLimitScore() {
     return limitScore;
   }
 
+  @Override
   public void setLimitScore(int limitScore) {
     this.limitScore = limitScore;
   }
 
+  @Override
   public String getFileName() {
     if (!locale.toString().equals("")) {
       fileName = fileName.replace(".", "_" + locale + ".");
@@ -30,14 +33,17 @@ public class AppProps {
     return fileName;
   }
 
+  @Override
   public void setFileName(String fileName) {
     this.fileName = fileName;
   }
 
+  @Override
   public Locale getLocale() {
     return locale;
   }
 
+  @Override
   public void setLocale(Locale locale) {
     this.locale = locale;
   }
