@@ -1,0 +1,8 @@
+spring:
+  shell:
+    interactive:
+      enabled: false
+
+application:
+  fileName: "tasks.csv"
+  locale: ru_RU
