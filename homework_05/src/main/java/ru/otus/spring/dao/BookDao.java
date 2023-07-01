@@ -9,6 +9,8 @@ public interface BookDao {
 
   void insert(Book book);
 
+  void update(Book book);
+
   Book findById(long id);
 
   List<Book> findAll();

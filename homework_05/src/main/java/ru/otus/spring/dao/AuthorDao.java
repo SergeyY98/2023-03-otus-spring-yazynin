@@ -9,9 +9,13 @@ public interface AuthorDao {
 
   void insert(Author author);
 
+  void update(Author author);
+
   Author findById(long id);
 
   List<Author> findAll();
+
+  List<Author> findAllWithRelations();
 
   void deleteById(long id);
 }

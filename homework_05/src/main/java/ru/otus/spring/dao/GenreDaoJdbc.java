@@ -25,9 +25,15 @@ public class GenreDaoJdbc implements GenreDao {
   }
 
   @Override
-  public void insert(Genre Genre) {
+  public void insert(Genre genre) {
     namedParameterJdbcOperations.update("insert into genres (name) values (:name)",
-        Map.of("name", Genre.getName()));
+        Map.of("name", genre.getName()));
+  }
+
+  @Override
+  public void update(Genre genre) {
+    namedParameterJdbcOperations.update("update genres set (name) = (:name)",
+        Map.of("name", genre.getName()));
   }
 
   @Override
@@ -40,6 +46,11 @@ public class GenreDaoJdbc implements GenreDao {
 
   @Override
   public List<Genre> findAll() {
+    return namedParameterJdbcOperations.query("select id, name from genres", new GenreMapper());
+  }
+
+  @Override
+  public List<Genre> findAllWithRelations() {
     return namedParameterJdbcOperations.query("select g.id, g.name " +
         "from genres g inner join books_genres gb on g.id = gb.genre_id " +
         "group by g.id, g.name " +

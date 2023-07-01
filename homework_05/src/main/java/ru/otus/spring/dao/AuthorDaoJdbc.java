@@ -32,6 +32,12 @@ public class AuthorDaoJdbc implements AuthorDao {
   }
 
   @Override
+  public void update(Author author) {
+    namedParameterJdbcOperations.update("update authors set (firstname, lastname) = (:firstname, :lastname)",
+        Map.of("firstname", author.getFirstname(), "lastname", author.getLastname()));
+  }
+
+  @Override
   public Author findById(long id) {
     Map<String, Object> params = Collections.singletonMap("id", id);
     return namedParameterJdbcOperations.queryForObject(
@@ -41,6 +47,11 @@ public class AuthorDaoJdbc implements AuthorDao {
 
   @Override
   public List<Author> findAll() {
+    return namedParameterJdbcOperations.query("select id, firstname, lastname from authors", new AuthorMapper());
+  }
+
+  @Override
+  public List<Author> findAllWithRelations() {
     return namedParameterJdbcOperations.query("select a.id, a.firstname, a.lastname " +
         "from authors a inner join books_authors ab on a.id = ab.author_id " +
         "group by a.id, a.firstname, a.lastname " +

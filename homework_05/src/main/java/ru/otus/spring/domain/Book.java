@@ -14,7 +14,13 @@ public class Book {
 
   private String name;
 
+  private List<Author> authors;
+
   private List<Genre> genres;
 
-  private List<Author> authors;
+  public Book(String name, List<Author> authors, List<Genre> genres){
+    this.name = name;
+    this.authors = authors;
+    this.genres = genres;
+  }
 }

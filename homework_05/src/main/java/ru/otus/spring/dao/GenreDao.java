@@ -9,9 +9,13 @@ public interface GenreDao {
 
   void insert(Genre genre);
 
+  void update(Genre genre);
+
   Genre findById(long genre_id);
 
   List<Genre> findAll();
+
+  List<Genre> findAllWithRelations();
 
   void deleteById(long genre_id);
 }

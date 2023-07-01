@@ -1,8 +1,8 @@
 INSERT INTO authors (firstname,lastname)
-VALUES ('Frank','Herbert'), ('Boris','Strugatsky'), ('Arcadiy','Strugatsky');
+VALUES ('Frank','Herbert'), ('Boris','Strugatsky'), ('Arcadiy','Strugatsky'), ('Alexander','Pushkin');
 
 INSERT INTO genres (name)
-VALUES ('Science fiction'), ('Fantasy'), ('Philosophy');
+VALUES ('Science fiction'), ('Fantasy'), ('Philosophy'), ('Thriller');
 
 INSERT INTO books (name) VALUES ('Dune'), ('Escape Attempt');
 

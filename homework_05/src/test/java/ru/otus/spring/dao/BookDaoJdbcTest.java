@@ -5,22 +5,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Dao для работы с книгами должно")
 @JdbcTest
 @Import({AuthorDaoJdbc.class, GenreDaoJdbc.class, BookDaoJdbc.class})
-//@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class BookDaoJdbcTest {
   private static final int EXPECTED_BOOK_COUNT = 2;
   private static final int EXISTING_BOOK_ID = 2;
@@ -29,17 +29,13 @@ public class BookDaoJdbcTest {
   private static final String EXISTING_BOOK_NAME = "Escape Attempt";
 
   @Autowired
-  private BookDaoJdbc bookDao;
+  private AuthorDao authorDao;
 
-  @BeforeTransaction
-  void beforeTransaction(){
-    System.out.println("beforeTransaction");
-  }
+  @Autowired
+  private GenreDao genreDao;
 
-  @AfterTransaction
-  void afterTransaction(){
-    System.out.println("afterTransaction");
-  }
+  @Autowired
+  private BookDao bookDao;
 
   @DisplayName("возвращать ожидаемое количество книг в БД")
   @Test
@@ -48,21 +44,21 @@ public class BookDaoJdbcTest {
     assertThat(actualBooksCount).isEqualTo(EXPECTED_BOOK_COUNT);
   }
 
-  //@Rollback(value = false)
-  //@Commit
   @DisplayName("добавлять книгу в БД")
   @Test
   void shouldInsertBook() {
-    Book expectedBook = new Book(3,"Roadside picnic", List.of(), List.of());
+    Book expectedBook = new Book(3,"Roadside picnic",
+        Stream.of(2, 3).map(authorDao::findById).collect(Collectors.toList()),
+        Stream.of(1, 3).map(genreDao::findById).collect(Collectors.toList()));
     bookDao.insert(expectedBook);
-    Book actualPerson = bookDao.findById(expectedBook.getId());
-    assertThat(actualPerson).usingRecursiveComparison().isEqualTo(expectedBook);
+    Book actualBook = bookDao.findById(expectedBook.getId());
+    assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
   @DisplayName("возвращать ожидаемую книгу по ее id")
   @Test
-  void shouldReturnExpectedPersonById() {
-    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, EXISTING_GENRES, EXISTING_AUTHORS);
+  void shouldReturnExpectedBookById() {
+    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, EXISTING_AUTHORS, EXISTING_GENRES);
     Book actualBook = bookDao.findById(expectedBook.getId());
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
@@ -82,7 +78,7 @@ public class BookDaoJdbcTest {
   @DisplayName("возвращать ожидаемый список книг")
   @Test
   void shouldContainExpectedBookInList() {
-    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, EXISTING_GENRES, EXISTING_AUTHORS);
+    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, EXISTING_AUTHORS, EXISTING_GENRES);
     List<Book> actualBookList = bookDao.findAll();
     assertThat(actualBookList)
         .contains(expectedBook);
