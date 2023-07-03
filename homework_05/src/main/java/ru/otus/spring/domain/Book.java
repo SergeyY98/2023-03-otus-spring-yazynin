@@ -18,7 +18,7 @@ public class Book {
 
   private List<Genre> genres;
 
-  public Book(String name, List<Author> authors, List<Genre> genres){
+  public Book(String name, List<Author> authors, List<Genre> genres) {
     this.name = name;
     this.authors = authors;
     this.genres = genres;

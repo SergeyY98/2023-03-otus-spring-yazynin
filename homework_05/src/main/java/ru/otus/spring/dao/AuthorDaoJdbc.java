@@ -22,7 +22,7 @@ public class AuthorDaoJdbc implements AuthorDao {
   public int count() {
     Integer count = namedParameterJdbcOperations.queryForObject(
         "select count(*) from authors", Map.of(), Integer.class);
-    return count == null? 0: count;
+    return count == null ? 0 : count;
   }
 
   @Override

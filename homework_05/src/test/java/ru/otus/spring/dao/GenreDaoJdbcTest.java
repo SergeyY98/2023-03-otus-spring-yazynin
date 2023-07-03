@@ -39,6 +39,15 @@ public class GenreDaoJdbcTest {
     assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
   }
 
+  @DisplayName("обновлять жанр в БД")
+  @Test
+  void shouldUpdateGenre() {
+    Genre expectedGenre = new Genre(4, "Detective");
+    genreDao.update(expectedGenre);
+    Genre actualGenre = genreDao.findById(expectedGenre.getId());
+    assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
+  }
+
   @DisplayName("возвращать ожидаемый жанр по его id")
   @Test
   void shouldReturnExpectedGenreById() {

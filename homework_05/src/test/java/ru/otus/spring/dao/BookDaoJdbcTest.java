@@ -55,6 +55,17 @@ public class BookDaoJdbcTest {
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
+  @DisplayName("обновлять книгу в БД")
+  @Test
+  void shouldUpdateBook() {
+    Book expectedBook = new Book(2,"Roadside picnic",
+        Stream.of(2, 3).map(authorDao::findById).collect(Collectors.toList()),
+        Stream.of(1, 3).map(genreDao::findById).collect(Collectors.toList()));
+    bookDao.update(expectedBook);
+    Book actualBook = bookDao.findById(expectedBook.getId());
+    assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
+  }
+
   @DisplayName("возвращать ожидаемую книгу по ее id")
   @Test
   void shouldReturnExpectedBookById() {

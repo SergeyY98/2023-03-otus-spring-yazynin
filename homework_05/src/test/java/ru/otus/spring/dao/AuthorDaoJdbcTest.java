@@ -39,6 +39,15 @@ public class AuthorDaoJdbcTest {
     assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
   }
 
+  @DisplayName("обновлять автора в БД")
+  @Test
+  void shouldUpdateAuthor() {
+    Author expectedAuthor = new Author(4, "Philip", "Dick");
+    authorDao.update(expectedAuthor);
+    Author actualAuthor = authorDao.findById(expectedAuthor.getId());
+    assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
+  }
+
   @DisplayName("возвращать ожидаемого автора по его id")
   @Test
   void shouldReturnExpectedAuthorById() {

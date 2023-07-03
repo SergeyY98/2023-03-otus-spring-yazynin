@@ -14,7 +14,7 @@ public class IOServiceStreams implements IOService {
   }
 
   @Override
-  public void outputString(String s){
+  public void outputString(String s) {
     output.println(s);
   }
 }

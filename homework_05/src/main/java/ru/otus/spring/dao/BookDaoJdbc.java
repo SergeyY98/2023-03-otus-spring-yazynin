@@ -15,11 +15,11 @@ import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,53 +36,60 @@ public class BookDaoJdbc implements BookDao {
   @Override
   public int count() {
     Integer count = namedParameterJdbcOperations.queryForObject("select count(*) from books", Map.of(), Integer.class);
-    return count == null? 0: count;
+    return count == null ? 0 : count;
   }
 
   @Override
   public void insert(Book book) {
     KeyHolder keyHolder = new GeneratedKeyHolder();
     SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", book.getName());
-    namedParameterJdbcOperations.update("insert into books (name) values (:name)",
-        namedParameters, keyHolder);
-    String authorValues = book.getAuthors().stream().map(a -> "(" +
-        Objects.requireNonNull(keyHolder.getKey()).longValue() +
-        ", " + a.getId() + ")").collect(Collectors.joining(","));
-    String genreValues = book.getGenres().stream().map(a -> "(" +
-        Objects.requireNonNull(keyHolder.getKey()).longValue() +
-        ", " + a.getId() + ")").collect(Collectors.joining(","));
-    if (!authorValues.isEmpty()) {
-      namedParameterJdbcOperations.update(
-          "insert into books_authors (book_id, author_id) values " + authorValues, Map.of());
+    namedParameterJdbcOperations.update("insert into books (name) values (:name)", namedParameters, keyHolder);
+    List<Author> authors = book.getAuthors();
+    List<Genre> genres = book.getGenres();
+    List<Map<String, Object>> batchAuthorValues = new ArrayList<>(authors.size());
+    for (Author author : authors) {
+      batchAuthorValues.add(
+          new MapSqlParameterSource("book_id", book.getId())
+              .addValue("author_id", author.getId()).getValues());
     }
-    if (!genreValues.isEmpty()) {
-      namedParameterJdbcOperations.update(
-          "insert into books_genres (book_id, genre_id) values " + genreValues, Map.of());
+    List<Map<String, Object>> batchGenreValues = new ArrayList<>(genres.size());
+    for (Genre genre : genres) {
+      batchGenreValues.add(
+          new MapSqlParameterSource("book_id", book.getId())
+              .addValue("genre_id", genre.getId()).getValues());
     }
+    namedParameterJdbcOperations.batchUpdate(
+        "insert into books_authors (book_id, author_id) values (:book_id, :author_id)",
+        batchAuthorValues.toArray(new Map[authors.size()]));
+    namedParameterJdbcOperations.batchUpdate(
+        "insert into books_genres (book_id, genre_id) values (:book_id, :genre_id)",
+        batchGenreValues.toArray(new Map[authors.size()]));
   }
 
   @Override
   public void update(Book book) {
     namedParameterJdbcOperations.update("update books set name=:name where id=:id",
         Map.of("id", book.getId(), "name", book.getName()));
-    String authorValues = book.getAuthors().stream().map(a -> "(" +
-        book.getId() + ", " + a.getId() + ")").collect(Collectors.joining(","));
-    String genreValues = book.getGenres().stream().map(a -> "(" +
-        book.getId() + ", " + a.getId() + ")").collect(Collectors.joining(","));
-    if (!authorValues.isEmpty()) {
-      namedParameterJdbcOperations.update(
-          "delete from books_authors where book_id = :id", Map.of("id", book.getId())
-      );
-      namedParameterJdbcOperations.update(
-          "insert into books_authors (book_id, author_id) values " + authorValues, Map.of());
+    List<Author> authors = book.getAuthors();
+    List<Genre> genres = book.getGenres();
+    List<Map<String, ?>> batchAuthorValues = new ArrayList<>(authors.size());
+    for (Author author : authors) {
+      batchAuthorValues.add(
+          new MapSqlParameterSource("book_id", book.getId()).addValue("author_id", author.getId()).getValues());
     }
-    if (!genreValues.isEmpty()) {
-      namedParameterJdbcOperations.update(
-          "delete from books_genres where book_id = :id", Map.of("id", book.getId())
-      );
-      namedParameterJdbcOperations.update(
-          "insert into books_genres (book_id, genre_id) values " + genreValues, Map.of());
+    List<Map<String, Object>> batchGenreValues = new ArrayList<>(genres.size());
+    for (Genre genre : genres) {
+      batchGenreValues.add(
+          new MapSqlParameterSource("book_id", book.getId()).addValue("genre_id", genre.getId()).getValues());
     }
+    namedParameterJdbcOperations.update("delete from books_authors where book_id = :id", Map.of("id", book.getId()));
+    namedParameterJdbcOperations.batchUpdate(
+        "insert into books_authors (book_id, author_id) values (:book_id, :author_id)",
+        batchAuthorValues.toArray(new Map[authors.size()]));
+    namedParameterJdbcOperations.update("delete from books_genres where book_id = :id", Map.of("id", book.getId()));
+    namedParameterJdbcOperations.batchUpdate(
+        "insert into books_genres (book_id, genre_id) values (:book_id, :genre_id)",
+        batchGenreValues.toArray(new Map[authors.size()]));
   }
 
   @Override
@@ -106,7 +113,6 @@ public class BookDaoJdbc implements BookDao {
     List<Genre> genres = genreDao.findAllWithRelations();
     List<BookAuthorRelation> bookAuthorRelations = getBookAuthorRelations();
     List<BookGenreRelation> bookGenreRelations = getBookGenreRelations();
-    List<BookAuthorRelation> relations = getBookAuthorRelations();
     Map<Long, Book> books =
         namedParameterJdbcOperations.query("select id, name from books",
             new BookMapper()).stream().collect(Collectors.toMap(Book::getId, Function.identity()));
