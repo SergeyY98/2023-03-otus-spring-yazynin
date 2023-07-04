@@ -17,7 +17,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({GenreDaoJdbc.class})
 public class GenreDaoJdbcTest {
   private static final int EXPECTED_GENRE_COUNT = 4;
+
   private static final int EXISTING_GENRE_ID = 4;
+
   private static final Genre EXISTING_GENRE = new Genre(1, "Science fiction");
 
   @Autowired

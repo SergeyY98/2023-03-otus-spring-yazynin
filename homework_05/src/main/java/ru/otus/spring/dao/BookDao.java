@@ -16,4 +16,6 @@ public interface BookDao {
   List<Book> findAll();
 
   void deleteById(long id);
+
+  void insertBookRelations(Book book);
 }

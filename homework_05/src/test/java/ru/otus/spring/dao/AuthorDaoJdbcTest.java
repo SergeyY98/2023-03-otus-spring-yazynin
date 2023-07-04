@@ -10,14 +10,17 @@ import ru.otus.spring.domain.Author;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Import({AuthorDaoJdbc.class})
 public class AuthorDaoJdbcTest {
   private static final int EXPECTED_AUTHOR_COUNT = 4;
+
   private static final int EXISTING_AUTHOR_ID = 4;
+
   private static final Author EXISTING_AUTHOR = new Author(1, "Frank","Herbert");
 
   @Autowired

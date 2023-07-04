@@ -44,6 +44,35 @@ public class BookDaoJdbc implements BookDao {
     KeyHolder keyHolder = new GeneratedKeyHolder();
     SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", book.getName());
     namedParameterJdbcOperations.update("insert into books (name) values (:name)", namedParameters, keyHolder);
+    insertBookRelations(book);
+  }
+
+  @Override
+  public void update(Book book) {
+    namedParameterJdbcOperations.update("update books set name=:name where id=:id",
+        Map.of("id", book.getId(), "name", book.getName()));
+    namedParameterJdbcOperations.update("delete from books_authors where book_id = :id", Map.of("id", book.getId()));
+    namedParameterJdbcOperations.update("delete from books_genres where book_id = :id", Map.of("id", book.getId()));
+    insertBookRelations(book);
+  }
+
+  @Override
+  public Book findById(long id) {
+    List<Author> authors = authorDao.findAllWithRelations();
+    List<Genre> genres = genreDao.findAllWithRelations();
+    List<BookAuthorRelation> bookAuthorRelations = getBookAuthorRelations();
+    List<BookGenreRelation> bookGenreRelations = getBookGenreRelations();
+    Map<String, Object> params = Collections.singletonMap("id", id);
+    Map<Long, Book> books =
+        namedParameterJdbcOperations.query(
+            "select id, name from books where id = :id", params,
+            new BookMapper()).stream().collect(Collectors.toMap(Book::getId, Function.identity()));
+    mergeBooksInfo(books, authors, genres, bookAuthorRelations, bookGenreRelations);
+    return Objects.requireNonNull(books).values().stream().findFirst().orElseThrow();
+  }
+
+  @Override
+  public void insertBookRelations(Book book) {
     List<Author> authors = book.getAuthors();
     List<Genre> genres = book.getGenres();
     List<Map<String, Object>> batchAuthorValues = new ArrayList<>(authors.size());
@@ -64,47 +93,6 @@ public class BookDaoJdbc implements BookDao {
     namedParameterJdbcOperations.batchUpdate(
         "insert into books_genres (book_id, genre_id) values (:book_id, :genre_id)",
         batchGenreValues.toArray(new Map[authors.size()]));
-  }
-
-  @Override
-  public void update(Book book) {
-    namedParameterJdbcOperations.update("update books set name=:name where id=:id",
-        Map.of("id", book.getId(), "name", book.getName()));
-    List<Author> authors = book.getAuthors();
-    List<Genre> genres = book.getGenres();
-    List<Map<String, ?>> batchAuthorValues = new ArrayList<>(authors.size());
-    for (Author author : authors) {
-      batchAuthorValues.add(
-          new MapSqlParameterSource("book_id", book.getId()).addValue("author_id", author.getId()).getValues());
-    }
-    List<Map<String, Object>> batchGenreValues = new ArrayList<>(genres.size());
-    for (Genre genre : genres) {
-      batchGenreValues.add(
-          new MapSqlParameterSource("book_id", book.getId()).addValue("genre_id", genre.getId()).getValues());
-    }
-    namedParameterJdbcOperations.update("delete from books_authors where book_id = :id", Map.of("id", book.getId()));
-    namedParameterJdbcOperations.batchUpdate(
-        "insert into books_authors (book_id, author_id) values (:book_id, :author_id)",
-        batchAuthorValues.toArray(new Map[authors.size()]));
-    namedParameterJdbcOperations.update("delete from books_genres where book_id = :id", Map.of("id", book.getId()));
-    namedParameterJdbcOperations.batchUpdate(
-        "insert into books_genres (book_id, genre_id) values (:book_id, :genre_id)",
-        batchGenreValues.toArray(new Map[authors.size()]));
-  }
-
-  @Override
-  public Book findById(long id) {
-    List<Author> authors = authorDao.findAllWithRelations();
-    List<Genre> genres = genreDao.findAllWithRelations();
-    List<BookAuthorRelation> bookAuthorRelations = getBookAuthorRelations();
-    List<BookGenreRelation> bookGenreRelations = getBookGenreRelations();
-    Map<String, Object> params = Collections.singletonMap("id", id);
-    Map<Long, Book> books =
-        namedParameterJdbcOperations.query(
-            "select id, name from books where id = :id", params,
-            new BookMapper()).stream().collect(Collectors.toMap(Book::getId, Function.identity()));
-    mergeBooksInfo(books, authors, genres, bookAuthorRelations, bookGenreRelations);
-    return Objects.requireNonNull(books).values().stream().findFirst().orElseThrow();
   }
 
   @Override

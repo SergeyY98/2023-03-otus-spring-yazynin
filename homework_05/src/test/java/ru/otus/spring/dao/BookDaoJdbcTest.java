@@ -23,9 +23,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({AuthorDaoJdbc.class, GenreDaoJdbc.class, BookDaoJdbc.class})
 public class BookDaoJdbcTest {
   private static final int EXPECTED_BOOK_COUNT = 2;
+
   private static final int EXISTING_BOOK_ID = 2;
-  private static final List<Genre> EXISTING_GENRES = List.of(new Genre(1, "Science fiction"), new Genre(3, "Philosophy"));
-  private static final List<Author> EXISTING_AUTHORS = List.of(new Author(2, "Boris","Strugatsky"), new Author(3, "Arcadiy","Strugatsky"));
+
+  private static final List<Genre> EXISTING_GENRES = List.of(new Genre(1, "Science fiction"),
+      new Genre(3, "Philosophy"));
+
+  private static final List<Author> EXISTING_AUTHORS = List.of(new
+      Author(2, "Boris","Strugatsky"), new Author(3, "Arcadiy","Strugatsky"));
+
   private static final String EXISTING_BOOK_NAME = "Escape Attempt";
 
   @Autowired
