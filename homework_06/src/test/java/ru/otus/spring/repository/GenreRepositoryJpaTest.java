@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class GenreRepositoryJpaTest {
   private static final int EXPECTED_GENRE_COUNT = 10;
 
-  private static final int EXISTING_GENRE_ID = 1;
+  private static final long EXISTING_GENRE_ID = 1;
 
   private static final Genre EXISTING_GENRE = new Genre(1, "genre_01");
 
@@ -37,7 +37,7 @@ public class GenreRepositoryJpaTest {
   void shouldInsertGenre() {
     Genre expectedGenre = new Genre(5, "Detective");
     genreRepository.update(expectedGenre);
-    Genre actualGenre = genreRepository.findById(expectedGenre.getId()).get();
+    Genre actualGenre = genreRepository.findById(expectedGenre.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
   }
 
@@ -46,26 +46,26 @@ public class GenreRepositoryJpaTest {
   void shouldUpdateGenre() {
     Genre expectedGenre = new Genre(4, "Detective");
     genreRepository.update(expectedGenre);
-    Genre actualGenre = genreRepository.findById(expectedGenre.getId()).get();
+    Genre actualGenre = genreRepository.findById(expectedGenre.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
   }
 
   @DisplayName("возвращать ожидаемый жанр по его id")
   @Test
   void shouldReturnExpectedGenreById() {
-    Genre actualGenre = genreRepository.findById(EXISTING_GENRE.getId()).get();
+    Genre actualGenre = genreRepository.findById(EXISTING_GENRE.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualGenre).usingRecursiveComparison().isEqualTo(EXISTING_GENRE);
   }
 
   @DisplayName("удалять заданный жанр по его id")
   @Test
   void shouldCorrectDeleteGenreById() {
-    assertThatCode(() -> genreRepository.findById(EXISTING_GENRE_ID).get())
+    assertThatCode(() -> genreRepository.findById(EXISTING_GENRE_ID).orElseThrow(NoSuchElementException::new))
         .doesNotThrowAnyException();
 
     genreRepository.deleteById(EXISTING_GENRE_ID);
 
-    assertThatThrownBy(() -> genreRepository.findById(EXISTING_GENRE_ID).get())
+    assertThatThrownBy(() -> genreRepository.findById(EXISTING_GENRE_ID).orElseThrow(NoSuchElementException::new))
         .isInstanceOf(NoSuchElementException.class);
   }
 
@@ -73,7 +73,6 @@ public class GenreRepositoryJpaTest {
   @Test
   void shouldReturnExpectedGenresList() {
     List<Genre> actualGenreList = genreRepository.findAll();
-    assertThat(actualGenreList)
-        .contains(EXISTING_GENRE);
+    assertThat(actualGenreList.get(0)).usingRecursiveComparison().isEqualTo(EXISTING_GENRE);
   }
 }

@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
-import ru.otus.spring.domain.Comment;
 import ru.otus.spring.domain.Genre;
 
 import java.util.List;
@@ -27,9 +26,6 @@ public class BookRepositoryJpaTest {
   private static final int EXPECTED_BOOK_COUNT = 10;
 
   private static final long EXISTING_BOOK_ID = 1;
-
-  private static final List<Comment> EXISTING_COMMENTS = List.of(new Comment(1, "author_01", "text_01"),
-      new Comment(2, "author_02", "text_02"));
 
   private static final List<Genre> EXISTING_GENRES = List.of(new Genre(1, "genre_01"),
       new Genre(2, "genre_02"), new Genre(3, "genre_03"));
@@ -63,24 +59,23 @@ public class BookRepositoryJpaTest {
 
   @DisplayName("возвращать ожидаемую книгу по ее id")
   @Test
-  //@Transactional
   void shouldReturnExpectedBookById() {
-    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, EXISTING_COMMENTS,
+    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME,
         EXISTING_AUTHORS, EXISTING_GENRES);
-    Book actualBook = bookRepository.findById(EXISTING_BOOK_ID).get();
+    Book actualBook = bookRepository.findById(EXISTING_BOOK_ID).orElseThrow(NoSuchElementException::new);
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
   @DisplayName("добавлять книгу в БД")
   @Test
   void shouldInsertBook() {
-    Book expectedBook = new Book(0,"Roadside picnic", null,
-        Stream.of(2, 3).map(i -> authorDao.findById(i).get()).collect(Collectors.toList()),
-        Stream.of(1, 3).map(i -> genreRepository.findById(i).get()).collect(Collectors.toList()));
+    Book expectedBook = new Book(0,"Roadside picnic",
+        Stream.of(2, 3).map(i -> authorDao.findById(i)
+            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()),
+        Stream.of(1, 3).map(i -> genreRepository.findById(i)
+            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()));
     bookRepository.update(expectedBook);
-    commentRepository.update(new Comment(0, "Zack", "Awesome charachters"));
-    commentRepository.update(new Comment(0, "Mike", "I love this book"));
-    Book actualBook = bookRepository.findById(expectedBook.getId()).get();
+    Book actualBook = bookRepository.findById(expectedBook.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
@@ -88,30 +83,31 @@ public class BookRepositoryJpaTest {
   @Test
   void shouldUpdateBook() {
     Book expectedBook = new Book(2,"Roadside picnic",
-        bookRepository.findById(2).get().getComments(),
-        Stream.of(2, 3).map(i -> authorDao.findById(i).get()).collect(Collectors.toList()),
-        Stream.of(1, 3).map(i -> genreRepository.findById(i).get()).collect(Collectors.toList()));
+        Stream.of(2, 3).map(i -> authorDao.findById(i)
+            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()),
+        Stream.of(1, 3).map(i -> genreRepository.findById(i)
+            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()));
     bookRepository.update(expectedBook);
-    Book actualBook = bookRepository.findById(expectedBook.getId()).get();
+    Book actualBook = bookRepository.findById(expectedBook.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
   @DisplayName("удалять заданную книгу по ее id")
   @Test
   void shouldCorrectDeleteBookById() {
-    assertThatCode(() -> bookRepository.findById(EXISTING_BOOK_ID).get())
+    assertThatCode(() -> bookRepository.findById(EXISTING_BOOK_ID).orElseThrow(NoSuchElementException::new))
         .doesNotThrowAnyException();
 
     bookRepository.deleteById(EXISTING_BOOK_ID);
 
-    assertThatThrownBy(() -> bookRepository.findById(EXISTING_BOOK_ID).get())
+    assertThatThrownBy(() -> bookRepository.findById(EXISTING_BOOK_ID).orElseThrow(NoSuchElementException::new))
         .isInstanceOf(NoSuchElementException.class);
   }
 
   @DisplayName("возвращать ожидаемый список книг")
   @Test
   void shouldContainExpectedBookInList() {
-    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, EXISTING_COMMENTS,
+    Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME,
         EXISTING_AUTHORS, EXISTING_GENRES);
     List<Book> actualBookList = bookRepository.findAll();
     assertThat(actualBookList.get(0))

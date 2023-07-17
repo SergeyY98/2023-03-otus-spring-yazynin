@@ -33,43 +33,19 @@ public class BookServiceImpl implements BookService {
   }
 
   @Override
-  public void findAll() {
-    try {
-      bookRepository.findAll().stream()
-          .map(b -> b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
-              b.getAuthors().stream().map(a -> a.getId() + ". " +
-                  a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
-              "\nGenres:\n" + b.getGenres().stream().map(g -> g.getId() + ". " + g.getName())
-              .collect(Collectors.joining("\n")) +
-              "\nComments:\n" + b.getComments().stream().map(c -> c.getId() + ". " +
-              c.getCommentator() + " : " + c.getText()).collect(Collectors.joining("\n")))
-          .forEach(ioService::outputString);
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No books found");
-    }
+  public List<Book> findAll() {
+    return bookRepository.findAll();
   }
 
   @Override
-  public void findById(long id) {
-    try {
-      Book b = bookRepository.findById(id).get();
-      ioService.outputString(b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
-          b.getAuthors().stream().map(a -> a.getId() + ". " +
-              a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
-          "\nGenres:\n" + b.getGenres().stream()
-          .map(g -> g.getId() + ". " + g.getName()).collect(Collectors.joining("\n")) +
-          "\nComments:\n" + b.getComments().stream().map(c -> c.getId() + ". " +
-          c.getCommentator() + " : " + c.getText()).collect(Collectors.joining("\n")));
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No books with selected id found");
-    }
+  public Book findById(long id) {
+    return bookRepository.findById(id).orElseThrow(NoSuchElementException::new);
   }
 
   @Transactional(readOnly = false)
   @Override
   public void deleteById(long id) {
     try {
-      bookRepository.findById(id);
       bookRepository.deleteById(id);
     } catch (NoSuchElementException e) {
       ioService.outputString("No book with selected id found");
@@ -80,9 +56,11 @@ public class BookServiceImpl implements BookService {
   @Override
   public void update(long id, String name, List<Long> authors, List<Long> genres) {
     bookRepository.update(
-        new Book(id, name, null,
-            authors.stream().map(a -> authorDao.findById(a).get()).collect(Collectors.toList()),
-            genres.stream().map(g -> genreRepository.findById(g).get()).collect(Collectors.toList())));
+        new Book(id, name,
+            authors.stream().map(a -> authorDao.findById(a).orElseThrow(NoSuchElementException::new))
+                .collect(Collectors.toList()),
+            genres.stream().map(g -> genreRepository.findById(g).orElseThrow(NoSuchElementException::new))
+                .collect(Collectors.toList())));
   }
 
   @Override

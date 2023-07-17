@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.otus.spring.domain.Book;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Repository
@@ -50,6 +51,6 @@ public class BookRepositoryJpa implements BookRepository {
 
   @Override
   public void deleteById(long id) {
-    em.remove(findById(id).get());
+    em.remove(findById(id).orElseThrow(NoSuchElementException::new));
   }
 }

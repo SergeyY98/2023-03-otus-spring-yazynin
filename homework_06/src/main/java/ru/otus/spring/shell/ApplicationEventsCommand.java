@@ -4,12 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import ru.otus.spring.domain.Author;
+import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Genre;
 import ru.otus.spring.service.AuthorService;
+import ru.otus.spring.service.GenreService;
 import ru.otus.spring.service.BookService;
 import ru.otus.spring.service.CommentService;
-import ru.otus.spring.service.GenreService;
+import ru.otus.spring.service.IOService;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @ShellComponent
@@ -24,6 +29,8 @@ public class ApplicationEventsCommand {
 
   private final CommentService commentService;
 
+  private final IOService ioService;
+
   @ShellMethod(value = "Count books", key = {"cb", "countBook"})
   public void countBook() {
     bookService.count();
@@ -31,12 +38,27 @@ public class ApplicationEventsCommand {
 
   @ShellMethod(value = "Find all books", key = {"fB", "findAllBooks"})
   public void getAllBooks() {
-    bookService.findAll();
+    bookService.findAll().stream()
+        .map(b -> b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
+            b.getAuthors().stream().map(a -> a.getId() + ". " +
+                a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
+            "\nGenres:\n" + b.getGenres().stream().map(g -> g.getId() + ". " + g.getName())
+            .collect(Collectors.joining("\n")))
+        .forEach(ioService::outputString);
   }
 
   @ShellMethod(value = "Find book by id", key = {"fb", "findBookById"})
   public void getBookById(@ShellOption String id) {
-    bookService.findById(Long.parseLong(id));
+    try {
+      Book b = bookService.findById(Long.parseLong(id));
+      ioService.outputString(b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
+          b.getAuthors().stream().map(a -> a.getId() + ". " +
+              a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
+          "\nGenres:\n" + b.getGenres().stream()
+          .map(g -> g.getId() + ". " + g.getName()).collect(Collectors.joining("\n")));
+    } catch (NoSuchElementException e) {
+      ioService.outputString("No books with selected id found");
+    }
   }
 
   @ShellMethod(value = "Delete book by id", key = {"db", "deleteBookById"})
@@ -67,12 +89,19 @@ public class ApplicationEventsCommand {
 
   @ShellMethod(value = "Find all authors", key = {"fA", "findAllAuthors"})
   public void getAllAuthors() {
-    authorService.findAll();
+    authorService.findAll().stream()
+        .map(a -> a.getId() + ") " + a.getFirstname() + " " + a.getLastname() + "\n")
+        .forEach(ioService::outputString);
   }
 
   @ShellMethod(value = "Find author by id", key = {"fa", "findAuthorById"})
   public void getAuthorById(@ShellOption String id) {
-    authorService.findById(Long.parseLong(id));
+    try {
+      Author a = authorService.findById(Long.parseLong(id));
+      ioService.outputString(a.getId() + ") " + a.getFirstname() + " " + a.getLastname());
+    } catch (NoSuchElementException e) {
+      ioService.outputString("No author with selected id found");
+    }
   }
 
   @ShellMethod(value = "Delete author by id", key = {"da", "deleteAuthorById"})
@@ -98,12 +127,19 @@ public class ApplicationEventsCommand {
 
   @ShellMethod(value = "Find all genres", key = {"fG", "findAllGenres"})
   public void getAllGenres() {
-    genreService.findAll();
+    genreService.findAll().stream()
+        .map(g -> g.getId() + ") " + g.getName() + "\n")
+        .forEach(ioService::outputString);
   }
 
   @ShellMethod(value = "Find genre by id", key = {"fg", "findGenreById"})
   public void getGenreById(@ShellOption String id) {
-    genreService.findById(Long.parseLong(id));
+    try {
+      Genre g = genreService.findById(Long.parseLong(id));
+      ioService.outputString(g.getId() + ") " + g.getName());
+    } catch (NoSuchElementException e) {
+      ioService.outputString("No author with selected id found");
+    }
   }
 
   @ShellMethod(value = "Delete genre by id", key = {"dg", "deleteGenreById"})
@@ -121,9 +157,11 @@ public class ApplicationEventsCommand {
     genreService.update(Long.parseLong(id), name);
   }
 
-  @ShellMethod(value = "Find comment by id", key = {"fc", "findCommentById"})
+  @ShellMethod(value = "Find comment by id", key = {"fC", "findCommentsById"})
   public void getCommentById(@ShellOption String id) {
-    commentService.findById(Long.parseLong(id));
+    commentService.findAllByBookId(Long.parseLong(id)).stream()
+        .map(c -> c.getId() + ") " + c.getCommentator() + " " + c.getText() + " " + c.getBook().getName() + "\n")
+        .forEach(ioService::outputString);
   }
 
   @ShellMethod(value = "Delete comment by id", key = {"dc", "deleteCommentById"})

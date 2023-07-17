@@ -1,11 +1,13 @@
 package ru.otus.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.repository.GenreRepository;
 import ru.otus.spring.domain.Genre;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class GenreServiceImpl implements GenreService {
@@ -20,29 +22,21 @@ public class GenreServiceImpl implements GenreService {
   }
 
   @Override
-  public void findAll() {
-    genreRepository.findAll().stream()
-        .map(g -> g.getId() + ") " + g.getName() + "\n")
-        .forEach(ioService::outputString);
+  public List<Genre> findAll() {
+    return genreRepository.findAll();
   }
 
   @Override
-  public void findById(long id) {
-    try {
-      Genre g = genreRepository.findById(id).get();
-      ioService.outputString(g.getId() + ") " + g.getName());
-    } catch (EmptyResultDataAccessException e) {
-      ioService.outputString("No genre with selected id found");
-    }
+  public Genre findById(long id) {
+    return genreRepository.findById(id).orElseThrow(NoSuchElementException::new);
   }
 
   @Transactional(readOnly = false)
   @Override
   public void deleteById(long id) {
     try {
-      genreRepository.findById(id);
       genreRepository.deleteById(id);
-    } catch (EmptyResultDataAccessException e) {
+    } catch (NoSuchElementException e) {
       ioService.outputString("No genre with selected id found");
     }
   }
@@ -57,9 +51,8 @@ public class GenreServiceImpl implements GenreService {
   @Override
   public void update(long id, String name) {
     try {
-      genreRepository.findById(id);
       genreRepository.update(new Genre(id, name));
-    } catch (EmptyResultDataAccessException e) {
+    } catch (NoSuchElementException e) {
       ioService.outputString("No genre with selected id found");
     }
   }

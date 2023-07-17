@@ -1,9 +1,13 @@
 package ru.otus.spring.service;
 
-public interface GenreService {
-  void findAll();
+import ru.otus.spring.domain.Genre;
 
-  void findById(long id);
+import java.util.List;
+
+public interface GenreService {
+  List<Genre> findAll();
+
+  Genre findById(long id);
 
   void deleteById(long id);
 

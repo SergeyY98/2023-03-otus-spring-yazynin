@@ -19,26 +19,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class AuthorRepositoryJpaTest {
   private static final int EXPECTED_AUTHOR_COUNT = 10;
 
-  private static final int EXISTING_AUTHOR_ID = 1;
+  private static final long EXISTING_AUTHOR_ID = 1;
 
-  private static final Author EXISTING_AUTHOR = new Author(1, "firstname_01", "lastname_01");
+  private static final Author EXISTING_AUTHOR = new Author(EXISTING_AUTHOR_ID, "firstname_01", "lastname_01");
 
   @Autowired
-  private AuthorRepository authorDao;
+  private AuthorRepository authorRepository;
 
   @DisplayName("возвращать ожидаемое количество авторов в БД")
   @Test
   void shouldReturnExpectedAuthorCount() {
-    long actualBooksCount = authorDao.count();
-    assertThat(actualBooksCount).isEqualTo(EXPECTED_AUTHOR_COUNT);
+    long actualAuthorsCount = authorRepository.count();
+    assertThat(actualAuthorsCount).isEqualTo(EXPECTED_AUTHOR_COUNT);
   }
 
   @DisplayName("добавлять автора в БД")
   @Test
   void shouldInsertAuthor() {
     Author expectedAuthor = new Author(5, "Philip", "Dick");
-    authorDao.update(expectedAuthor);
-    Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
+    authorRepository.update(expectedAuthor);
+    Author actualAuthor = authorRepository.findById(expectedAuthor.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
   }
 
@@ -46,35 +46,34 @@ public class AuthorRepositoryJpaTest {
   @Test
   void shouldUpdateAuthor() {
     Author expectedAuthor = new Author(4, "Philip", "Dick");
-    authorDao.update(expectedAuthor);
-    Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
+    authorRepository.update(expectedAuthor);
+    Author actualAuthor = authorRepository.findById(expectedAuthor.getId()).orElseThrow(NoSuchElementException::new);
     assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
   }
 
   @DisplayName("возвращать ожидаемого автора по его id")
   @Test
   void shouldReturnExpectedAuthorById() {
-    Author actualBook = authorDao.findById(EXISTING_AUTHOR.getId()).get();
-    assertThat(actualBook).usingRecursiveComparison().isEqualTo(EXISTING_AUTHOR);
+    Author actualAuthor = authorRepository.findById(EXISTING_AUTHOR_ID).orElseThrow(NoSuchElementException::new);
+    assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(EXISTING_AUTHOR);
   }
 
   @DisplayName("удалять заданного автора по его id")
   @Test
   void shouldCorrectDeleteGenreById() {
-    assertThatCode(() -> authorDao.findById(EXISTING_AUTHOR_ID).get())
+    assertThatCode(() -> authorRepository.findById(EXISTING_AUTHOR_ID).orElseThrow(NoSuchElementException::new))
         .doesNotThrowAnyException();
 
-    authorDao.deleteById(EXISTING_AUTHOR_ID);
+    authorRepository.deleteById(EXISTING_AUTHOR_ID);
 
-    assertThatThrownBy(() -> authorDao.findById(EXISTING_AUTHOR_ID).get())
+    assertThatThrownBy(() -> authorRepository.findById(EXISTING_AUTHOR_ID).orElseThrow(NoSuchElementException::new))
         .isInstanceOf(NoSuchElementException.class);
   }
 
   @DisplayName("возвращать ожидаемый список авторов")
   @Test
   void shouldReturnExpectedAuthorsList() {
-    List<Author> actualBookList = authorDao.findAll();
-    assertThat(actualBookList)
-        .contains(EXISTING_AUTHOR);
+    List<Author> actualAuthorList = authorRepository.findAll();
+    assertThat(actualAuthorList.get(0)).usingRecursiveComparison().isEqualTo(EXISTING_AUTHOR);
   }
 }

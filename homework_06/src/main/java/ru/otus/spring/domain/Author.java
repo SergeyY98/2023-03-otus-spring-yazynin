@@ -6,11 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -20,9 +18,34 @@ public class Author {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @Column(name = "firstname", nullable = false, unique = true)
+  @Column(name = "firstname", nullable = false)
   private String firstname;
 
-  @Column(name = "lastname", nullable = false, unique = true)
+  @Column(name = "lastname", nullable = false)
   private String lastname;
+
+  public long getId() {
+    return this.id;
+  }
+
+  public String getFirstname() {
+    return this.firstname;
+  }
+
+  public String getLastname() {
+    return this.lastname;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public void setLastname(String firstname) {
+    this.lastname = lastname;
+  }
+
 }

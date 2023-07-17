@@ -4,13 +4,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.domain.Author;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Transactional
 @Repository
 public class AuthorRepositoryJpa implements AuthorRepository {
 
@@ -51,6 +50,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
 
   @Override
   public void deleteById(long id) {
-    em.remove(findById(id).get());
+    em.remove(findById(id).orElseThrow(NoSuchElementException::new));
   }
 }

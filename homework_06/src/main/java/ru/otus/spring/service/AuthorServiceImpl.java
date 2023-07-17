@@ -1,48 +1,42 @@
 package ru.otus.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.repository.AuthorRepository;
 import ru.otus.spring.domain.Author;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 public class AuthorServiceImpl implements AuthorService {
   private final IOService ioService;
 
-  private final AuthorRepository authorDao;
+  private final AuthorRepository authorRepository;
 
   @Autowired
   public AuthorServiceImpl(IOService ioService, AuthorRepository authorDao) {
     this.ioService = ioService;
-    this.authorDao = authorDao;
+    this.authorRepository = authorDao;
   }
 
   @Override
-  public void findAll() {
-    authorDao.findAll().stream()
-        .map(a -> a.getId() + ") " + a.getFirstname() + " " + a.getLastname() + "\n")
-        .forEach(ioService::outputString);
+  public List<Author> findAll() {
+    return authorRepository.findAll();
   }
 
   @Override
-  public void findById(long id) {
-    try {
-      Author a = authorDao.findById(id).get();
-      ioService.outputString(a.getId() + ") " + a.getFirstname() + " " + a.getLastname());
-    } catch (EmptyResultDataAccessException e) {
-      ioService.outputString("No author with selected id found");
-    }
+  public Author findById(long id) {
+    return authorRepository.findById(id).orElseThrow(NoSuchElementException::new);
   }
 
   @Transactional(readOnly = false)
   @Override
   public void deleteById(long id) {
     try {
-      authorDao.findById(id);
-      authorDao.deleteById(id);
-    } catch (EmptyResultDataAccessException e) {
+      authorRepository.deleteById(id);
+    } catch (NoSuchElementException e) {
       ioService.outputString("No author with selected id found");
     }
   }
@@ -50,22 +44,21 @@ public class AuthorServiceImpl implements AuthorService {
   @Transactional(readOnly = false)
   @Override
   public void insert(String firstname, String lastname) {
-    authorDao.update(new Author(0, firstname, lastname));
+    authorRepository.update(new Author(0, firstname, lastname));
   }
 
   @Transactional(readOnly = false)
   @Override
   public void update(long id, String firstname, String lastname) {
     try {
-      authorDao.findById(id);
-      authorDao.update(new Author(id, firstname, lastname));
-    } catch (EmptyResultDataAccessException e) {
+      authorRepository.update(new Author(id, firstname, lastname));
+    } catch (NoSuchElementException e) {
       ioService.outputString("No book with selected id found");
     }
   }
 
   @Override
   public void count() {
-    ioService.outputString("Author count: " + authorDao.count());
+    ioService.outputString("Author count: " + authorRepository.count());
   }
 }

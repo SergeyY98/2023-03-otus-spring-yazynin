@@ -1,9 +1,13 @@
 package ru.otus.spring.service;
 
-public interface AuthorService {
-  void findAll();
+import ru.otus.spring.domain.Author;
 
-  void findById(long id);
+import java.util.List;
+
+public interface AuthorService {
+  List<Author> findAll();
+
+  Author findById(long id);
 
   void deleteById(long id);
 

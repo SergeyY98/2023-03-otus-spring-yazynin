@@ -6,11 +6,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -22,4 +20,20 @@ public class Genre {
 
   @Column(name = "name", nullable = false, unique = true)
   private String name;
+
+  public long getId() {
+    return this.id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

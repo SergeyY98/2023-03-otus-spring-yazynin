@@ -1,11 +1,13 @@
 package ru.otus.spring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.repository.CommentRepository;
 import ru.otus.spring.domain.Comment;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -20,22 +22,16 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public void findById(long id) {
-    try {
-      Comment c = commentRepository.findById(id).get();
-      ioService.outputString(c.getId() + ") " + c.getCommentator() + " " + c.getText());
-    } catch (EmptyResultDataAccessException e) {
-      ioService.outputString("No comment with selected id found");
-    }
+  public List<Comment> findAllByBookId(long id) {
+    return commentRepository.findAllByBookId(id);
   }
 
   @Transactional(readOnly = false)
   @Override
   public void deleteById(long id) {
     try {
-      commentRepository.findById(id);
       commentRepository.deleteById(id);
-    } catch (EmptyResultDataAccessException e) {
+    } catch (NoSuchElementException e) {
       ioService.outputString("No comment with selected id found");
     }
   }
