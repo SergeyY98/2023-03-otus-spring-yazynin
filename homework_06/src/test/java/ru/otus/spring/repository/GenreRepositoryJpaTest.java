@@ -1,17 +1,17 @@
 package ru.otus.spring.repository;
 
+import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.spring.domain.Genre;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @Import({GenreRepositoryJpa.class})
@@ -25,6 +25,9 @@ public class GenreRepositoryJpaTest {
   @Autowired
   private GenreRepository genreRepository;
 
+  @Autowired
+  private TestEntityManager em;
+
   @DisplayName("возвращать ожидаемое количество жанров в БД")
   @Test
   void shouldReturnExpectedGenreCount() {
@@ -37,7 +40,7 @@ public class GenreRepositoryJpaTest {
   void shouldInsertGenre() {
     Genre expectedGenre = new Genre(5, "Detective");
     genreRepository.update(expectedGenre);
-    Genre actualGenre = genreRepository.findById(expectedGenre.getId()).orElseThrow(NoSuchElementException::new);
+    Genre actualGenre = em.find(Genre.class, expectedGenre.getId());
     assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
   }
 
@@ -46,7 +49,7 @@ public class GenreRepositoryJpaTest {
   void shouldUpdateGenre() {
     Genre expectedGenre = new Genre(4, "Detective");
     genreRepository.update(expectedGenre);
-    Genre actualGenre = genreRepository.findById(expectedGenre.getId()).orElseThrow(NoSuchElementException::new);
+    Genre actualGenre = em.find(Genre.class, expectedGenre.getId());
     assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
   }
 
@@ -60,13 +63,13 @@ public class GenreRepositoryJpaTest {
   @DisplayName("удалять заданный жанр по его id")
   @Test
   void shouldCorrectDeleteGenreById() {
-    assertThatCode(() -> genreRepository.findById(EXISTING_GENRE_ID).orElseThrow(NoSuchElementException::new))
-        .doesNotThrowAnyException();
+    val existingGenre = em.find(Genre.class, EXISTING_GENRE_ID);
+    assertThat(existingGenre).isNotNull();
 
     genreRepository.deleteById(EXISTING_GENRE_ID);
+    val deletedGenre = em.find(Genre.class, EXISTING_GENRE_ID);
 
-    assertThatThrownBy(() -> genreRepository.findById(EXISTING_GENRE_ID).orElseThrow(NoSuchElementException::new))
-        .isInstanceOf(NoSuchElementException.class);
+    assertThat(deletedGenre).isNull();
   }
 
   @DisplayName("возвращать ожидаемый список жанров")

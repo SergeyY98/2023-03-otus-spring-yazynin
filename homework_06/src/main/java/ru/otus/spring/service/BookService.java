@@ -1,13 +1,11 @@
 package ru.otus.spring.service;
 
-import ru.otus.spring.domain.Book;
-
 import java.util.List;
 
 public interface BookService {
-  List<Book> findAll();
+  String findAll();
 
-  Book findById(long id);
+  String findById(long id);
 
   void deleteById(long id);
 

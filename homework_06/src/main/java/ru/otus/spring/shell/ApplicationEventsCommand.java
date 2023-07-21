@@ -5,7 +5,6 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.spring.domain.Author;
-import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.service.AuthorService;
 import ru.otus.spring.service.GenreService;
@@ -38,27 +37,12 @@ public class ApplicationEventsCommand {
 
   @ShellMethod(value = "Find all books", key = {"fB", "findAllBooks"})
   public void getAllBooks() {
-    bookService.findAll().stream()
-        .map(b -> b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
-            b.getAuthors().stream().map(a -> a.getId() + ". " +
-                a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
-            "\nGenres:\n" + b.getGenres().stream().map(g -> g.getId() + ". " + g.getName())
-            .collect(Collectors.joining("\n")))
-        .forEach(ioService::outputString);
+    ioService.outputString(bookService.findAll());
   }
 
   @ShellMethod(value = "Find book by id", key = {"fb", "findBookById"})
   public void getBookById(@ShellOption String id) {
-    try {
-      Book b = bookService.findById(Long.parseLong(id));
-      ioService.outputString(b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
-          b.getAuthors().stream().map(a -> a.getId() + ". " +
-              a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
-          "\nGenres:\n" + b.getGenres().stream()
-          .map(g -> g.getId() + ". " + g.getName()).collect(Collectors.joining("\n")));
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No books with selected id found");
-    }
+    ioService.outputString(bookService.findById(Long.parseLong(id)));
   }
 
   @ShellMethod(value = "Delete book by id", key = {"db", "deleteBookById"})
@@ -159,9 +143,7 @@ public class ApplicationEventsCommand {
 
   @ShellMethod(value = "Find comment by id", key = {"fC", "findCommentsById"})
   public void getCommentById(@ShellOption String id) {
-    commentService.findAllByBookId(Long.parseLong(id)).stream()
-        .map(c -> c.getId() + ") " + c.getCommentator() + " " + c.getText() + " " + c.getBook().getName() + "\n")
-        .forEach(ioService::outputString);
+    ioService.outputString(commentService.findAllByBookId(Long.parseLong(id)));
   }
 
   @ShellMethod(value = "Delete comment by id", key = {"dc", "deleteCommentById"})

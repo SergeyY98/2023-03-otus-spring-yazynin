@@ -1,5 +1,6 @@
 package ru.otus.spring.repository;
 
+import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Dao для работы с книгами должно")
 @DataJpaTest
-@Import({AuthorRepositoryJpa.class, GenreRepositoryJpa.class, BookRepositoryJpa.class, CommentRepositoryJpa.class})
+@Import({AuthorRepositoryJpa.class, GenreRepositoryJpa.class, BookRepositoryJpa.class})
 public class BookRepositoryJpaTest {
   private static final int EXPECTED_BOOK_COUNT = 10;
 
@@ -43,9 +42,6 @@ public class BookRepositoryJpaTest {
 
   @Autowired
   private BookRepository bookRepository;
-
-  @Autowired
-  private CommentRepository commentRepository;
 
   @Autowired
   private TestEntityManager em;
@@ -75,7 +71,7 @@ public class BookRepositoryJpaTest {
         Stream.of(1, 3).map(i -> genreRepository.findById(i)
             .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()));
     bookRepository.update(expectedBook);
-    Book actualBook = bookRepository.findById(expectedBook.getId()).orElseThrow(NoSuchElementException::new);
+    Book actualBook = em.find(Book.class, expectedBook.getId());
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
@@ -88,20 +84,20 @@ public class BookRepositoryJpaTest {
         Stream.of(1, 3).map(i -> genreRepository.findById(i)
             .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()));
     bookRepository.update(expectedBook);
-    Book actualBook = bookRepository.findById(expectedBook.getId()).orElseThrow(NoSuchElementException::new);
+    Book actualBook = em.find(Book.class, expectedBook.getId());
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
   }
 
   @DisplayName("удалять заданную книгу по ее id")
   @Test
   void shouldCorrectDeleteBookById() {
-    assertThatCode(() -> bookRepository.findById(EXISTING_BOOK_ID).orElseThrow(NoSuchElementException::new))
-        .doesNotThrowAnyException();
+    val existingBook = em.find(Book.class, EXISTING_BOOK_ID);
+    assertThat(existingBook).isNotNull();
 
     bookRepository.deleteById(EXISTING_BOOK_ID);
+    val deletedBook = em.find(Book.class, EXISTING_BOOK_ID);
 
-    assertThatThrownBy(() -> bookRepository.findById(EXISTING_BOOK_ID).orElseThrow(NoSuchElementException::new))
-        .isInstanceOf(NoSuchElementException.class);
+    assertThat(deletedBook).isNull();
   }
 
   @DisplayName("возвращать ожидаемый список книг")

@@ -1,9 +1,11 @@
 package ru.otus.spring.repository;
 
+import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.spring.domain.Author;
 
@@ -11,8 +13,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @Import({AuthorRepositoryJpa.class})
@@ -26,6 +26,9 @@ public class AuthorRepositoryJpaTest {
   @Autowired
   private AuthorRepository authorRepository;
 
+  @Autowired
+  private TestEntityManager em;
+
   @DisplayName("возвращать ожидаемое количество авторов в БД")
   @Test
   void shouldReturnExpectedAuthorCount() {
@@ -38,7 +41,7 @@ public class AuthorRepositoryJpaTest {
   void shouldInsertAuthor() {
     Author expectedAuthor = new Author(5, "Philip", "Dick");
     authorRepository.update(expectedAuthor);
-    Author actualAuthor = authorRepository.findById(expectedAuthor.getId()).orElseThrow(NoSuchElementException::new);
+    Author actualAuthor = em.find(Author.class, expectedAuthor.getId());
     assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
   }
 
@@ -47,7 +50,7 @@ public class AuthorRepositoryJpaTest {
   void shouldUpdateAuthor() {
     Author expectedAuthor = new Author(4, "Philip", "Dick");
     authorRepository.update(expectedAuthor);
-    Author actualAuthor = authorRepository.findById(expectedAuthor.getId()).orElseThrow(NoSuchElementException::new);
+    Author actualAuthor = em.find(Author.class, expectedAuthor.getId());
     assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
   }
 
@@ -61,13 +64,13 @@ public class AuthorRepositoryJpaTest {
   @DisplayName("удалять заданного автора по его id")
   @Test
   void shouldCorrectDeleteGenreById() {
-    assertThatCode(() -> authorRepository.findById(EXISTING_AUTHOR_ID).orElseThrow(NoSuchElementException::new))
-        .doesNotThrowAnyException();
+    val existingAuthor = em.find(Author.class, EXISTING_AUTHOR_ID);
+    assertThat(existingAuthor).isNotNull();
 
     authorRepository.deleteById(EXISTING_AUTHOR_ID);
+    val deletedAuthor = em.find(Author.class, EXISTING_AUTHOR_ID);
 
-    assertThatThrownBy(() -> authorRepository.findById(EXISTING_AUTHOR_ID).orElseThrow(NoSuchElementException::new))
-        .isInstanceOf(NoSuchElementException.class);
+    assertThat(deletedAuthor).isNull();
   }
 
   @DisplayName("возвращать ожидаемый список авторов")

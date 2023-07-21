@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.repository.CommentRepository;
-import ru.otus.spring.domain.Comment;
 
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @Service
 public class CommentServiceImpl implements CommentService {
   private final IOService ioService;
@@ -22,8 +22,10 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public List<Comment> findAllByBookId(long id) {
-    return commentRepository.findAllByBookId(id);
+  public String findAllByBookId(long id) {
+    return commentRepository.findAllByBookId(id).stream()
+        .map(c -> c.getId() + ") " + c.getCommentator() + " " + c.getText() + " " + c.getBook().getName())
+        .collect(Collectors.joining("\n"));
   }
 
   @Transactional(readOnly = false)

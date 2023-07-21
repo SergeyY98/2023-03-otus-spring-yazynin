@@ -37,7 +37,8 @@ public class CommentRepositoryJpa implements CommentRepository {
   @Override
   public List<Comment> findAllByBookId(long book_id) {
     TypedQuery<Comment> query = em.createQuery(
-        "select c from Comment c join fetch c.book b where b.id = :book_id", Comment.class);
+        "select c from Comment c where exists ( " +
+            "select 1 from Book b where c.book=b and b.id = :book_id)", Comment.class);
     return query.setParameter("book_id", book_id).getResultList();
   }
 

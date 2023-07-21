@@ -33,13 +33,27 @@ public class BookServiceImpl implements BookService {
   }
 
   @Override
-  public List<Book> findAll() {
-    return bookRepository.findAll();
+  public String findAll() {
+    return bookRepository.findAll().stream()
+        .map(b -> b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
+            b.getAuthors().stream().map(a -> a.getId() + ". " +
+                a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
+            "\nGenres:\n" + b.getGenres().stream().map(g -> g.getId() + ". " + g.getName())
+            .collect(Collectors.joining("\n"))).collect(Collectors.joining("\n"));
   }
 
   @Override
-  public Book findById(long id) {
-    return bookRepository.findById(id).orElseThrow(NoSuchElementException::new);
+  public String findById(long id) {
+    try {
+      Book b = bookRepository.findById(id).orElseThrow(NoSuchElementException::new);
+      return b.getId() + ") " + b.getName() + "\n" + "Authors:\n" +
+          b.getAuthors().stream().map(a -> a.getId() + ". " +
+              a.getFirstname() + " " + a.getLastname()).collect(Collectors.joining("\n")) +
+          "\nGenres:\n" + b.getGenres().stream()
+          .map(g -> g.getId() + ". " + g.getName()).collect(Collectors.joining("\n"));
+    } catch (NoSuchElementException e) {
+      return "No books with selected id found";
+    }
   }
 
   @Transactional(readOnly = false)
