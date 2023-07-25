@@ -33,12 +33,6 @@ public class BookRepositoryJpaTest {
   private static final String EXISTING_BOOK_NAME = "book_01";
 
   @Autowired
-  private AuthorRepository authorDao;
-
-  @Autowired
-  private GenreRepository genreRepository;
-
-  @Autowired
   private BookRepository bookRepository;
 
   @Autowired
@@ -64,10 +58,8 @@ public class BookRepositoryJpaTest {
   @Test
   void shouldInsertBook() {
     Book expectedBook = new Book(0,"Roadside picnic",
-        Stream.of(2, 3).map(i -> authorDao.findById(i)
-            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()),
-        Stream.of(1, 3).map(i -> genreRepository.findById(i)
-            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()));
+        Stream.of(2, 3).map(i -> em.find(Author.class, i)).collect(Collectors.toList()),
+        Stream.of(2, 3).map(i -> em.find(Genre.class, i)).collect(Collectors.toList()));
     bookRepository.save(expectedBook);
     Book actualBook = em.find(Book.class, expectedBook.getId());
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
@@ -77,10 +69,8 @@ public class BookRepositoryJpaTest {
   @Test
   void shouldUpdateBook() {
     Book expectedBook = new Book(2,"Roadside picnic",
-        Stream.of(2, 3).map(i -> authorDao.findById(i)
-            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()),
-        Stream.of(1, 3).map(i -> genreRepository.findById(i)
-            .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList()));
+        Stream.of(2, 3).map(i -> em.find(Author.class, i)).collect(Collectors.toList()),
+        Stream.of(2, 3).map(i -> em.find(Genre.class, i)).collect(Collectors.toList()));
     bookRepository.save(expectedBook);
     Book actualBook = em.find(Book.class, expectedBook.getId());
     assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
