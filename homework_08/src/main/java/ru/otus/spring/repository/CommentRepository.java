@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface CommentRepository extends MongoRepository<Comment, String> {
 
-  @Query("select c from Comment c where exists ( " +
-      "select 1 from Book b where c.book=b and b.name = :book_name)")
-  List<Comment> findAllByBookName(@Param("book_name") String name);
+  @Query("{'book._id' : ?0 }")
+  List<Comment> findAllByBookId(@Param("book_id") String id);
+
+  @Query(value = "{'book._id' : ?0 }", delete = true)
+  List<Comment> deleteAllByBookId(@Param("book_id") String id);
 }

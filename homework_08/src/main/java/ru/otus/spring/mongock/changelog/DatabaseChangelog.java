@@ -25,9 +25,11 @@ public class DatabaseChangelog {
 
   private Genre genre2;
 
-  private Book book;
+  private Book book1;
 
-  @ChangeSet(order = "001", id = "dropDb", author = "stvort", runAlways = true)
+  private Book book2;
+
+  @ChangeSet(order = "001", id = "dropDb", author = "SergeyY98", runAlways = true)
   public void dropDb(MongoDatabase db) {
     db.drop();
   }
@@ -46,12 +48,15 @@ public class DatabaseChangelog {
 
   @ChangeSet(order = "003", id = "insertBook", author = "SergeyY98")
   public void insertBook(BookRepository repository) {
-    book = repository.save(new Book("book_01", List.of(author1, author2), List.of(genre1, genre2)));
+    book1 = repository.save(new Book("book_01", List.of(author1, author2), List.of(genre1, genre2)));
+    book2 = repository.save(new Book("book_02", List.of(author1, author2), List.of(genre1, genre2)));
   }
 
   @ChangeSet(order = "004", id = "insertComment", author = "SergeyY98")
   public void insertComment(CommentRepository repository) {
-    repository.save(new Comment("author_01", "text_01", book));
-    repository.save(new Comment("author_02", "text_02", book));
+    repository.save(new Comment("author_01", "text_01", book1));
+    repository.save(new Comment("author_02", "text_02", book1));
+    repository.save(new Comment("author_03", "text_03", book2));
+    repository.save(new Comment("author_02", "text_04", book2));
   }
 }

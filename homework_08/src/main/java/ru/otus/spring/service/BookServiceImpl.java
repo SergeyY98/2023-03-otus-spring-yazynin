@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.repository.AuthorRepository;
 import ru.otus.spring.repository.BookRepository;
+import ru.otus.spring.repository.CommentRepository;
 import ru.otus.spring.repository.GenreRepository;
 import ru.otus.spring.domain.Book;
 
@@ -24,13 +25,17 @@ public class BookServiceImpl implements BookService {
 
   private final BookRepository bookRepository;
 
+  private final CommentRepository commentRepository;
+
   @Autowired
   public BookServiceImpl(IOService ioService, AuthorRepository authorDao,
-                         GenreRepository genreRepository, BookRepository bookRepository) {
+                         GenreRepository genreRepository, BookRepository bookRepository,
+                         CommentRepository commentRepository) {
     this.ioService = ioService;
     this.authorDao = authorDao;
     this.genreRepository = genreRepository;
     this.bookRepository = bookRepository;
+    this.commentRepository = commentRepository;
   }
 
   @Override
@@ -61,6 +66,7 @@ public class BookServiceImpl implements BookService {
   public void deleteById(String id) {
     try {
       bookRepository.deleteById(id);
+      commentRepository.deleteAllByBookId(id);
     } catch (NoSuchElementException e) {
       ioService.outputString("No book with selected id found");
     }

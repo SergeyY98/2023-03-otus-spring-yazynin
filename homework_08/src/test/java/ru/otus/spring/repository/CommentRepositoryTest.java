@@ -74,7 +74,8 @@ public class CommentRepositoryTest {
   @DisplayName("возвращать ожидаемый список комментариев")
   @Test
   void shouldContainExpectedCommentInList() {
-    List<Comment> actualCommentList = commentRepository.findAllByBookName(EXISTING_BOOK_NAME);
+    List<Comment> actualCommentList = commentRepository
+        .findAllByBookId(mongoTemplate.findAll(Book.class).get(0).getId());
     assertThat(actualCommentList.size()).isEqualTo(COMMENT_AMMOUNT);
   }
 }

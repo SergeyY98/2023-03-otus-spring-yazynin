@@ -66,7 +66,7 @@ public class ApplicationEventsCommand {
   @ShellMethod(value = "Find all authors", key = {"fA", "findAllAuthors"})
   public void getAllAuthors() {
     authorService.findAll().stream()
-        .map(a -> a.getFirstname() + " " + a.getLastname() + "\n")
+        .map(a -> a.getId() + " " + a.getFirstname() + " " + a.getLastname() + "\n")
         .forEach(ioService::outputString);
   }
 

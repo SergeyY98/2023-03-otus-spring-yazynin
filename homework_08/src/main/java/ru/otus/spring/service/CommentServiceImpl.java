@@ -29,8 +29,8 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public String findAllByBookId(String name) {
-    return commentRepository.findAllByBookName(name).stream()
+  public String findAllByBookId(String id) {
+    return commentRepository.findAllByBookId(id).stream()
         .map(c -> c.getId() + " " + c.getCommentator() + " " + c.getText() + " " + c.getBook().getName())
         .collect(Collectors.joining("\n"));
   }
