@@ -34,11 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
   @Transactional(readOnly = false)
   @Override
   public void deleteById(String id) {
-    try {
-      authorRepository.deleteById(id);
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No author with selected id found");
-    }
+    authorRepository.deleteById(id);
   }
 
   @Transactional(readOnly = false)

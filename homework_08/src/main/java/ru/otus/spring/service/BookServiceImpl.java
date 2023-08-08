@@ -64,12 +64,8 @@ public class BookServiceImpl implements BookService {
   @Transactional(readOnly = false)
   @Override
   public void deleteById(String id) {
-    try {
-      bookRepository.deleteById(id);
-      commentRepository.deleteAllByBookId(id);
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No book with selected id found");
-    }
+    bookRepository.deleteById(id);
+    commentRepository.deleteAllByBookId(id);
   }
 
   @Transactional(readOnly = false)

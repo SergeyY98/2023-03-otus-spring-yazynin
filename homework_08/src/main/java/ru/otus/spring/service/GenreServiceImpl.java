@@ -34,11 +34,7 @@ public class GenreServiceImpl implements GenreService {
   @Transactional(readOnly = false)
   @Override
   public void deleteById(String id) {
-    try {
-      genreRepository.deleteById(id);
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No genre with selected id found");
-    }
+    genreRepository.deleteById(id);
   }
 
   @Transactional(readOnly = false)

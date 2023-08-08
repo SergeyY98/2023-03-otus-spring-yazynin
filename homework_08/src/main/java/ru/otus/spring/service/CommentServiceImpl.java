@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.repository.CommentRepository;
 
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -38,10 +37,6 @@ public class CommentServiceImpl implements CommentService {
   @Transactional(readOnly = false)
   @Override
   public void deleteById(String id) {
-    try {
-      commentRepository.deleteById(id);
-    } catch (NoSuchElementException e) {
-      ioService.outputString("No comment with selected id found");
-    }
+    commentRepository.deleteById(id);
   }
 }
