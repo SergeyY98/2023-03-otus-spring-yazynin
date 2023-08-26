@@ -18,8 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -91,9 +90,9 @@ public class BookControllerTest {
 
   @Test
   void shouldDeleteCorrectBook() throws Exception {
-    mvc.perform(get("/delete")
+    mvc.perform(delete("/delete")
             .param("id", "1"))
-        .andExpect(status().is3xxRedirection());
+        .andExpect(status().isOk());
     verify(service, times(1)).deleteById(1L);
   }
 }

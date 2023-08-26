@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>List of all persons</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style type="text/css">
         body {
@@ -64,11 +65,25 @@
             </td>
             <td>
                 <a class="btn btn-primary" href="edit.html" th:href="@{/edit(id=${book.id})}">Edit</a>
-                <a class="btn btn-danger"th:href="@{/delete(id=${book.id})}">Delete</a>
+                <button id="deleteButton" th:data-id="${book.id}" class="btn btn-danger">Delete</button>
             </td>
         </tr>
         </tbody>
         <a class="btn btn-primary" href="edit.html" th:href="@{/save}">Save</a>
     </table>
 </body>
-</html>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        $("#deleteButton").click(function () {
+            var itemId = $(this).data("id");
+            $.ajax({
+                url: '/delete',
+                type: 'DELETE',
+                data: { id: itemId },
+                success: function () {
+                    location.reload();
+                }
+            });
+        });
+    });
+</script></html>

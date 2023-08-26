@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.dto.AuthorDto;
 import ru.otus.spring.dto.BookDto;
@@ -82,9 +79,9 @@ public class BookController {
     return "edit";
   }
 
-  @GetMapping(value = "/delete", params = {"id"})
+  @DeleteMapping(value = "/delete", params = {"id"})
   public String deleteBook(@RequestParam("id") long id, Model model) {
     bookService.deleteById(id);
-    return "redirect:/";
+    return "list";
   }
 }
