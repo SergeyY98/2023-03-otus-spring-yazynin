@@ -29,13 +29,13 @@ public class BookController {
   }
 
   @GetMapping("/{id}")
-  public BookDto getBookById(@PathVariable("id") String id) {
-    return BookDto.fromDomainObject(bookService.findById(Long.parseLong(id)));
+  public BookDto getBookById(@PathVariable("id") long id) {
+    return BookDto.fromDomainObject(bookService.findById(id));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Object> deleteBook(@PathVariable("id") String id) {
-    bookService.deleteById(Long.parseLong(id));
+  public ResponseEntity<Object> deleteBook(@PathVariable("id") long id) {
+    bookService.deleteById(id);
     return ResponseEntity.noContent().build();
   }
 
