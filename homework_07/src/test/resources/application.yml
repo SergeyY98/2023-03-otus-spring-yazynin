@@ -5,9 +5,9 @@ spring:
 
   jpa:
     defer-datasource-initialization: true
-    generate-ddl: true
+    generate-ddl: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
 
     properties:
       hibernate:

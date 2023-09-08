@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import ReactDOM from 'react-dom';
 import { Link, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, FormGroup, InputGroup } from "@blueprintjs/core";
+import BookService from './service/BookService';
 
 const NewBook = () => {
 
@@ -24,15 +25,8 @@ const NewBook = () => {
   const navigate = useNavigate();
 
   const saveBook = () => {
-    console.log(JSON.stringify(book));
-      fetch(`/api/books`, {
-        method: "POST",
-        body: JSON.stringify(book),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
-      });
-      navigate('/');
+    BookService.update(book);
+    navigate('/');
   };
 
   const addAuthor = () => {

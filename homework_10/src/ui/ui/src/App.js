@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ReactDOM from 'react-dom';
 import { Link, Routes, Route, useNavigate } from 'react-router-dom';
 import { Button, Toaster, Position } from "@blueprintjs/core";
+import BookService from './service/BookService';
 import "./App.css";
 
 const AppToaster = Toaster.create({
@@ -11,31 +12,29 @@ const AppToaster = Toaster.create({
 })
 
 const App = () => {
+
   const [books, setBooks] = useState([]);
 
+  const navigate = useNavigate();
+
+  const deleteBook = (id) => {
+    BookService.deleteBook(id)
+        .then(() => {
+            setBooks((values) => {
+              return values.filter((item) => item.id !== id);
+            });
+            AppToaster.show({
+              message: "Book deleted successfully",
+              intent: "success",
+              timeout: 3000,
+            });
+        });
+   };
+
   useEffect(() => {
-    fetch('api/books')
-      .then((response) => response.json())
+    BookService.getAll()
       .then((json) => setBooks(json));
   }, []);
-
-  const deleteUser = (id) => {
-      fetch(`/api/books/${id}`, {
-        method: "DELETE",
-      })
-        .then(() => {
-          setBooks((values) => {
-            return values.filter((item) => item.id !== id);
-          });
-          AppToaster.show({
-            message: "Book deleted successfully",
-            intent: "success",
-            timeout: 3000,
-          });
-        });
-    };
-
-    const navigate = useNavigate();
 
   return (
     <div className="App">
@@ -65,9 +64,9 @@ const App = () => {
                             );
                         })}</ul></td>
                         <td>
-                            <Button intent="primary" onClick={() => navigate(`/${book.id}`)}>Update</Button>
+                            <Button intent="primary" onClick={() => navigate(`${book.id}`)}>Update</Button>
                             &nbsp;
-                            <Button intent="danger" onClick={() => deleteUser(book.id)}>
+                            <Button intent="danger" onClick={() => deleteBook(book.id)}>
                                 Delete
                             </Button>
                         </td>

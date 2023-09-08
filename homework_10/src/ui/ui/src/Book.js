@@ -5,10 +5,11 @@ import { useState, useEffect } from "react";
 import ReactDOM from 'react-dom';
 import { Link, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, FormGroup, InputGroup } from "@blueprintjs/core";
+import BookService from './service/BookService';
+import FormInput from './components/FormInput';
+import "./Book.css";
 
 const Book = () => {
-
-  const { id } = useParams();
 
   const [book, setBook] = useState({
     id: 0,
@@ -23,137 +24,137 @@ const Book = () => {
         name: ""
     }]
   });
+
+  const { id } = useParams();
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`api/books/${id}`)
-      .then((response) => response.json())
-      .then((json) => setBook(json));
+    BookService.get(id).then((json) => setBook(json));
   }, []);
 
   const updateBook = () => {
-    console.log(JSON.stringify(book));
-      fetch(`/api/books`, {
-        method: "PUT",
-        body: JSON.stringify(book),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
-      });
+      BookService.update(book);
       navigate('/');
   };
 
-  const addAuthor = () => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setBook((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleArrayChange = (e, property, index) => {
+    const { name, value } = e.target;
     setBook(prevBook => {
         const newBook = {...prevBook};
-        newBook.authors.push({
-            id: "",
-            firstname: "",
-            lastname: ""
-        });
+        newBook[property][index][name] = value;
+        return newBook;
+    });
+}
+
+  const addRow = (property) => {
+    setBook(prevBook => {
+        const newBook = {...prevBook};
+        newBook[property].push({});
         return newBook;
     });
   };
 
-  const addGenre = () => {
+  const deleteRow = (id, property) => {
     setBook(prevBook => {
         const newBook = {...prevBook};
-        newBook.genres.push({
-            id: "",
-            name: ""
-        });
-        return newBook;
-    });
-  };
-
-  const deleteAuthor = (id) => {
-    setBook(prevBook => {
-        const newBook = {...prevBook};
-        newBook.authors.splice(id, 1);
-        console.log(newBook);
-        return newBook;
-    });
-  }
-
-  const deleteGenre = (id) => {
-    setBook(prevBook => {
-        const newBook = {...prevBook};
-        newBook.genres.splice(id, 1);
-        console.log(newBook);
+        newBook[property].splice(id, 1);
         return newBook;
     });
   };
 
   return (
     <Card interactive={true}>
-        <h3>Book Info</h3>
+        <h2>Book Info</h2>
         <FormGroup label="Book Id" labelFor="id-input">
             <InputGroup id="id-input" placeholder="Book id" value={book.id} readonly />
         </FormGroup>
-        <FormGroup label="Book Title" labelFor="title-input">
-            <InputGroup id="title-input" placeholder="title" type="text" name="name" defaultValue={book.name}
-            onChange={(event) => {setBook(prevBook => {
-                const newBook = {...prevBook};
-                newBook.name = event.target.value;
-                return newBook;
-            });}} />
-        </FormGroup>
-        <FormGroup label="Authors">
+        <FormInput
+            type="text"
+            value={book.name}
+            placeholder="Book Name"
+            label="Name"
+            name="name"
+            onChange={handleChange}
+        />
+        <h4>Authors</h4>
+        <div>
             {book.authors.map((author, index) => {
                 return (
                 <FormGroup>
-                    <InputGroup id="author-id" key={author.id} placeholder="id" defaultValue={author.id}
-                    onChange={(event) => {setBook(prevBook => {
-                                    const newBook = {...prevBook};
-                                    newBook.authors[index].id = event.target.value;
-                                    return newBook;
-                                });}} />
-                    <InputGroup id="author-firstname" placeholder="firstname" defaultValue={author.firstname}
-                    onChange={(event) => {setBook(prevBook => {
-                                    const newBook = {...prevBook};
-                                    newBook.authors[index].firstname = event.target.value;
-                                    return newBook;
-                                });}} />
-                    <InputGroup id="author-lastname" placeholder="lastname" defaultValue={author.lastname}
-                    onChange={(event) => {setBook(prevBook => {
-                                    const newBook = {...prevBook};
-                                    newBook.authors[index].lastname = event.target.value;
-                                    return newBook;
-                                });}} />
-                    <Button intent="primary" onClick={() => deleteAuthor(index)}>Delete</Button>
+                    <FormInput
+                        type="text"
+                        value={author.id}
+                        placeholder="Author Id"
+                        label="Id"
+                        name="id"
+                    onChange={(e) => handleArrayChange(e, "authors", index)}
+                    />
+                    <FormInput
+                        type="text"
+                        value={author.firstname}
+                        placeholder="Author Firstname"
+                        label="Firstname"
+                        name={"firstname"}
+                    onChange={(e) => handleArrayChange(e, "authors", index)}
+                    />
+                    <FormInput
+                        type="text"
+                        value={author.lastname}
+                        placeholder="Author Lastname"
+                        label="Lastname"
+                        name={"lastname"}
+                    onChange={(e) => handleArrayChange(e, "authors", index)}
+                    />
+                    <Button intent="primary" onClick={() => deleteRow(index, "authors")}>Delete</Button>
                 </FormGroup>
                 );
             })}
-            <Button intent="primary" onClick={() => addAuthor()}>Add</Button>
-        </FormGroup>
-        <FormGroup label="Genres">
+            <Button intent="primary" onClick={() => addRow("authors")}>Add</Button>
+        </div>
+        <h4>Genres</h4>
+        <div>
             {book.genres.map((genre, index) => {
                 return (
                 <FormGroup>
-                    <InputGroup id="genre-id" placeholder="id" defaultValue={genre.id}
-                    onChange={(event) => {setBook(prevBook => {
-                        const newBook = {...prevBook};
-                        newBook.genres[index].id = event.target.value;
-                        return newBook;
-                    });}} />
-                    <InputGroup id="author-name" placeholder="name" defaultValue={genre.name}
-                    onChange={(event) => {setBook(prevBook => {
-                        const newBook = {...prevBook};
-                        newBook.genres[index].name = event.target.value;
-                        return newBook;
-                    });}} />
-                    <Button intent="primary" onClick={() => deleteGenre(index)}>Delete</Button>
+                     <FormInput
+                         type="text"
+                         value={genre.id}
+                         placeholder="Genre Id"
+                         label="Id"
+                         name="id"
+                     onChange={(e) => handleArrayChange(e, "genres", index)}
+                     />
+                    <FormInput
+                        type="text"
+                        value={genre.name}
+                        placeholder="Genre Name"
+                        label="Name"
+                        name="name"
+                    onChange={(e) => handleArrayChange(e, "genres", index)}
+                    />
+                    <Button intent="primary" onClick={() => deleteRow(index, "genres")}>Delete</Button>
                 </FormGroup>
                 );
             })}
-            <Button intent="primary" onClick={() => addGenre()}>Add</Button>
-        </FormGroup>
-        <Button intent="primary" onClick={() => updateBook()}>
-            Save
-        </Button>
-        <Button intent="secondary" onClick={() => navigate('/')}>
-            Cancel
-        </Button>
+            <Button intent="primary" onClick={() => addRow("genres")}>Add</Button>
+        </div>
+        <div class="submit-btns">
+            <Button intent="primary" onClick={() => updateBook()}>
+                Save
+            </Button>
+            <Button intent="secondary" onClick={() => navigate('/')}>
+                Cancel
+            </Button>
+        </div>
     </Card>
   );
 };

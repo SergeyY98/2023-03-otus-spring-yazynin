@@ -44,7 +44,7 @@ public class Author {
     this.firstname = firstname;
   }
 
-  public void setLastname(String firstname) {
+  public void setLastname(String lastname) {
     this.lastname = lastname;
   }
 
