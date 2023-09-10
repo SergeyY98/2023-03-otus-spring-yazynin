@@ -16,13 +16,8 @@ public class BookRepositoryImpl implements BookRepository {
             LEFT JOIN books_authors ba ON ba.book_id = b.id
             LEFT JOIN authors a ON a.id = ba.author_id
             """;
-  //LEFT JOIN books_genres bg ON bg.book_id = b.id,
-  //                g.id g_id, g.name g_name
-  //LEFT JOIN genres g ON g.id = bg.genre_id
 
   private final AuthorRepository authorRepository;
-
-  //private final GenreRepository genreRepository;
 
   private final DatabaseClient client;
 
@@ -55,8 +50,6 @@ public class BookRepositoryImpl implements BookRepository {
     return this.saveBook(book)
         .flatMap(this::saveAuthors)
         .flatMap(this::saveBookAuthors);
-        //.flatMap(this::saveGenres)
-        //.flatMap(this::saveBookGenres);
   }
 
   @Override
@@ -65,9 +58,6 @@ public class BookRepositoryImpl implements BookRepository {
         .flatMap(this::saveAuthors)
         .flatMap(this::deleteBookAuthors)
         .flatMap(this::saveBookAuthors);
-        //.flatMap(this::saveGenres)
-        //.flatMap(this::deleteBookGenres)
-        //.flatMap(this::saveBookGenres);
   }
 
   public Mono<Book> saveBook(Book book) {
@@ -103,14 +93,6 @@ public class BookRepositoryImpl implements BookRepository {
         .thenReturn(book);
   }
 
-  /*private Mono<Book> saveGenres(Book book) {
-    return Flux.fromIterable(book.getGenres())
-        .flatMap(genreRepository::save)
-        .collectList()
-        .doOnNext(book::setGenres)
-        .thenReturn(book);
-  }*/
-
   private Mono<Book> saveBookAuthors(Book book) {
     String query = "INSERT INTO BOOKS_AUTHORS(book_id, author_id) VALUES (:book_id, :author_id)";
 
@@ -118,18 +100,6 @@ public class BookRepositoryImpl implements BookRepository {
         .flatMap(author -> client.sql(query)
             .bind("book_id", book.getId())
             .bind("author_id", author.getId())
-            .fetch().rowsUpdated())
-        .collectList()
-        .thenReturn(book);
-  }
-
-  private Mono<Book> saveBookGenres(Book book) {
-    String query = "INSERT INTO BOOKS_GENRES(book_id, genre_id) VALUES (:book_id, :genre_id)";
-
-    return Flux.fromIterable(book.getGenres())
-        .flatMap(genre -> client.sql(query)
-            .bind("book_id", book.getId())
-            .bind("genre_id", genre.getId())
             .fetch().rowsUpdated())
         .collectList()
         .thenReturn(book);

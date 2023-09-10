@@ -1,6 +1,5 @@
 import React from 'react';
 import Fragment from 'react';
-import Navbar from './components/Navbar';
 import './App.css';
 import Authors from './Authors';
 import Author from './Author';

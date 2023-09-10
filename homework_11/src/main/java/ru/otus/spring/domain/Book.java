@@ -22,12 +22,9 @@ public class Book {
 
   private List<Author> authors  = new ArrayList<>();
 
-  private List<Genre> genres = new ArrayList<>();
-
-  public Book(String name, List<Author> authors, List<Genre> genres) {
+  public Book(String name, List<Author> authors) {
     this.name = name;
     this.authors = authors;
-    this.genres = genres;
   }
 
   public long getId() {
@@ -42,10 +39,6 @@ public class Book {
     return this.authors;
   }
 
-  public List<Genre> getGenres() {
-    return this.genres;
-  }
-
   public void setId(long id) {
     this.id = id;
   }
@@ -58,20 +51,12 @@ public class Book {
     this.authors = authors;
   }
 
-  public void setGenres(List<Genre> genres) {
-    this.genres = genres;
-  }
-
   public static Mono<Book> fromRows(List<Map<String, Object>> rows) {
     return Mono.just(new Book(
         Long.parseLong(rows.get(0).get("b_id").toString()),
         rows.get(0).get("b_name").toString(),
         rows.stream()
             .map(Author::fromRow)
-            .filter(Objects::nonNull)
-            .toList(),
-        rows.stream()
-            .map(Genre::fromRow)
             .filter(Objects::nonNull)
             .toList()));
   }

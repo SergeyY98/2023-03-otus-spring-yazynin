@@ -44,7 +44,6 @@ const Books = () => {
                     <th>ID</th>
                     <th>Name</th>
                     <th>Authors</th>
-                    <th>Genres</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -56,11 +55,6 @@ const Books = () => {
                         <td><ul>{book.authors.map((author, index) => {
                             return (
                                 <li key={index}>{author.firstname} {author.lastname}</li>
-                            );
-                        })}</ul></td>
-                        <td><ul>{book.genres.map((genre, index) => {
-                            return (
-                                <li key={index}>{genre.name}</li>
                             );
                         })}</ul></td>
                         <td>
