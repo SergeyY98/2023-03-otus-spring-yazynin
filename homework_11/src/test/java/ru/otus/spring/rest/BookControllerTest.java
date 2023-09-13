@@ -1,25 +1,27 @@
 package ru.otus.spring.rest;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import ru.otus.spring.repository.BookRepository;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@WebFluxTest(BookController.class)
 public class BookControllerTest {
 
   @Autowired
-  private RouterFunction<ServerResponse> route;
+  private WebTestClient webTestClient;
+
+  @MockBean
+  private BookRepository bookRepository;
 
   @Test
   void testRoute() {
-    WebTestClient client = WebTestClient
-        .bindToRouterFunction(route)
-        .build();
-
-    client.get()
+    webTestClient.get()
         .uri("/api/books")
         .exchange()
         .expectStatus()

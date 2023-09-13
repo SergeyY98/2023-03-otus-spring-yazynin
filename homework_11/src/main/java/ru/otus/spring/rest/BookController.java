@@ -39,10 +39,8 @@ public class BookController {
   @DeleteMapping("/{id}")
   public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("id") long id) {
     return bookRepository.findById(id)
-        .flatMap(s ->
-            bookRepository.delete(s)
-                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
-        )
+        .flatMap(bookRepository::delete)
+        .map(v -> new ResponseEntity<Void>(HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
