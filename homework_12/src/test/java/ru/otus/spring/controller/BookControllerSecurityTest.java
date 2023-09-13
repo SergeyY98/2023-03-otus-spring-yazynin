@@ -2,10 +2,11 @@ package ru.otus.spring.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.spring.domain.Author;
@@ -15,7 +16,6 @@ import ru.otus.spring.service.BookService;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -25,11 +25,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @WebMvcTest(BookController.class)
-public class BookControllerTest {
+public class BookControllerSecurityTest {
 
   private static final List<Genre> EXISTING_GENRES = List.of(new Genre(1, "genre_01"),
       new Genre(2, "genre_02"), new Genre(3, "genre_03"));
@@ -46,82 +44,80 @@ public class BookControllerTest {
   @MockBean
   private BookService service;
 
-
   @WithMockUser(
       username = "admin",
       authorities = {"ROLE_ADMIN"}
   )
-  @Test
-  void shouldReturnCorrectBooksList() throws Exception {
-    List<Book> books = List.of(new Book(1, "book_01", EXISTING_AUTHORS, EXISTING_GENRES, List.of()),
-        new Book(2, "book_02", EXISTING_AUTHORS, EXISTING_GENRES, List.of()));
-    given(service.findAll()).willReturn(books);
-
-    mvc.perform(get("/"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("list"))
-        .andExpect(model().attribute("books", hasSize(2)));
-  }
-
-  @WithMockUser(
-      username = "admin",
-      authorities = {"ROLE_ADMIN"}
-  )
-  @Test
-  void shouldReturnCorrectBook() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"/", "/edit", "/save"})
+  public void testGetAuthenticatedOnAdmin(String input) throws Exception {
     Book book = new Book(1, "book_01", EXISTING_AUTHORS, EXISTING_GENRES, List.of());
     given(service.findById(1L)).willReturn(book);
-
-    mvc.perform(get("/edit")
-          .param("id", "1"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("edit"))
-        .andExpect(model().attributeExists("book"));
+    mvc.perform(get(input)
+            .param("id", "1")
+            .with(csrf()))
+        .andExpect(status().isOk());
   }
 
   @WithMockUser(
       username = "admin",
       authorities = {"ROLE_ADMIN"}
   )
-  @Test
-  public void shouldSaveCorrectBook() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"addAuthor", "addGenre", "deleteAuthor", "deleteGenre"})
+  public void testPostAuthenticatedOnAdmin(String param) throws Exception {
     Book book = new Book(1, "book_01", EXISTING_AUTHORS, EXISTING_GENRES, List.of());
     given(service.findById(1L)).willReturn(book);
 
     mvc.perform(post("/edit")
-            .param("id", "0")
             .param("name", "book_11")
+            .param("id", "0")
+            .param(param, "0")
             .with(csrf()))
-        .andExpect(status().is3xxRedirection())
-        .andExpect(view().name("redirect:/"));
-    verify(service, times(1)).save(any(Book.class));
+        .andExpect(status().isOk());
   }
 
-  @WithMockUser(
-      username = "admin",
-      authorities = {"ROLE_ADMIN"}
-  )
+  @ParameterizedTest
+  @ValueSource(strings = {"/", "/edit", "/save"})
+  public void testGetNonAuthenticatedOnAdmin(String input) throws Exception {
+    Book book = new Book(1, "book_01", EXISTING_AUTHORS, EXISTING_GENRES, List.of());
+    given(service.findById(1L)).willReturn(book);
+    mvc.perform(get(input)
+            .param("id", "1")
+            .with(csrf()))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"addAuthor", "addGenre", "deleteAuthor", "deleteGenre"})
+  public void testPostNonAuthenticatedOnAdmin(String param) throws Exception {
+    Book book = new Book(1, "book_01", EXISTING_AUTHORS, EXISTING_GENRES, List.of());
+    given(service.findById(1L)).willReturn(book);
+
+    mvc.perform(post("/edit")
+            .param("name", "book_11")
+            .param("id", "0")
+            .param(param, "0")
+            .with(csrf()))
+        .andExpect(status().isUnauthorized());
+  }
+
   @Test
-  void shouldEditCorrectBook() throws Exception {
+  void testDeleteNonAuthenticatedOnAdmin() throws Exception {
+    mvc.perform(delete("/delete")
+            .param("id", "1")
+            .with(csrf()))
+        .andExpect(status().isUnauthorized());
+    verify(service, times(0)).deleteById(1L);
+  }
+
+  @Test
+  void testEditNonAuthenticatedOnAdmin() throws Exception {
     mvc.perform(post("/edit")
             .param("id", "1")
             .param("name", "book_01")
             .with(csrf()))
-        .andExpect(status().is3xxRedirection())
-        .andExpect(view().name("redirect:/"));
-    verify(service, times(1)).save(any(Book.class));
-  }
-
-  @WithMockUser(
-      username = "admin",
-      authorities = {"ROLE_ADMIN"}
-  )
-  @Test
-  void shouldDeleteCorrectBook() throws Exception {
-    mvc.perform(delete("/delete")
-            .param("id", "1")
-            .with(csrf()))
-        .andExpect(status().isOk());
-    verify(service, times(1)).deleteById(1L);
+        .andExpect(status().isUnauthorized());
+    verify(service, times(0)).save(any(Book.class));
   }
 }

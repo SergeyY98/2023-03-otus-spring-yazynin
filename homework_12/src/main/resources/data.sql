@@ -42,7 +42,7 @@ VALUES (1, 1),   (1, 2),   (1, 3),
        (9, 9),   (9, 8),   (9, 10),
        (10, 10), (10, 1),  (10, 2);
 
-INSERT INTO USERS (USERNAME, PASSWORD, ENABLED)
-VALUES('admin','$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG',1);
+INSERT INTO users (username, password)
+VALUES('admin','$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG');
 
-INSERT INTO AUTHORITIES VALUES('admin','ROLE_ADMIN');
+INSERT INTO roles (name) VALUES('ROLE_ADMIN');
