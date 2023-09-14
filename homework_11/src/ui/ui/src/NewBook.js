@@ -26,8 +26,8 @@ const NewBook = () => {
   });
   const navigate = useNavigate();
 
-  const updateBook = () => {
-        BookService.update(book);
+  const saveBook = () => {
+        BookService.save(book);
         navigate('/books');
     };
 
@@ -101,7 +101,7 @@ const NewBook = () => {
             })}
             <Button intent="primary" onClick={() => addRow("authors")}>Add</Button>
         </FormGroup>
-        <Button intent="primary" onClick={() => updateBook()}>
+        <Button intent="primary" onClick={() => saveBook()}>
             Save
         </Button>
         <Button intent="secondary" onClick={() => navigate('/books')}>

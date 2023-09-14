@@ -8,9 +8,17 @@ const BookService = {
     getAll: () =>
         fetch('api/books')
           .then((response) => response.json()),
-    update: (book) =>
+    save: (book) =>
         fetch(`/api/books`, {
             method: "POST",
+            body: JSON.stringify(book),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            }
+        }),
+    update: (book) =>
+        fetch(`/api/books`, {
+            method: "PUT",
             body: JSON.stringify(book),
             headers: {
                 "Content-type": "application/json; charset=UTF-8",

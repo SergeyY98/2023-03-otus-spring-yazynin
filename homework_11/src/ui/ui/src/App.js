@@ -14,17 +14,9 @@ import ReactDOM from 'react-dom/client';
 const App = () => {
   return (
     <HashRouter>
-        <header>
-            <nav>
-              <ul>
-                <li><Link to='/'>Домой</Link></li>
-                <li><Link to='/books'>Книги</Link></li>
-              </ul>
-            </nav>
-        </header>
         <main>
          <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Books />} />
             <Route path="/books" element={<Books />} />
             <Route path="/books/:id" element={<Book />} />
             <Route path="/books/new" element={<NewBook />} />
