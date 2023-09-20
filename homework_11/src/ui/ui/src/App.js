@@ -7,7 +7,6 @@ import NewAuthor from './NewAuthor';
 import Books from './Books';
 import Book from './Book';
 import NewBook from './NewBook';
-import Home from './Home';
 import { HashRouter, Routes, Route, Link } from "react-router-dom";
 import ReactDOM from 'react-dom/client';
 

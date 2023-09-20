@@ -32,8 +32,10 @@ const Books = () => {
    };
 
   useEffect(() => {
-    BookService.getAll()
-      .then((json) => setBooks(json));
+    setTimeout(() =>
+        BookService.getAll()
+            .then((json) => setBooks(json)),
+    200)
   }, []);
 
   return (

@@ -30,12 +30,14 @@ const Book = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    BookService.get(id).then((json) => setBook(json));
+    BookService.get(id).then((json) => setBook(json.data));
   }, []);
 
   const updateBook = () => {
-      BookService.update(book);
-      navigate('/');
+      const response = BookService.update(book);
+      if (response && response.data) {
+        navigate('/');
+      }
   };
 
   const handleChange = (e) => {

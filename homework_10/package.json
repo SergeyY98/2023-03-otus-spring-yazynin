@@ -13,6 +13,7 @@
   "dependencies": {
     "@blueprintjs/core": "^5.2.1",
     "@tanstack/react-query": "^4.33.0",
+    "axios": "^1.5.0",
     "css-loader": "^6.8.1",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
