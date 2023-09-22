@@ -21,13 +21,13 @@ public class UserService implements UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-    var user = userRepository.findByUsername(s);
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    var user = userRepository.findByUsername(username);
 
     if (user == null) {
       throw new UsernameNotFoundException("User not found");
     }
 
-    return new User(user.getId(), user.getUsername(), user.getPassword(), user.getRoles().stream().toList());
+    return new User(user.getId(), user.getUsername(), user.getPassword(), user.getAuthorities().stream().toList());
   }
 }

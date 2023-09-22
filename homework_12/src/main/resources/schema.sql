@@ -44,14 +44,14 @@ create table IF NOT EXISTS users (
   primary key (id)
 );
 
-create table IF NOT EXISTS roles (
+create table IF NOT EXISTS authorities (
   id bigserial,
   name VARCHAR(50) NOT NULL,
   primary key (id)
 );
 
-create table IF NOT EXISTS users_roles(
+create table IF NOT EXISTS users_authorities(
     user_id bigserial references users(id) on delete cascade,
-    role_id bigserial references roles(id) on delete cascade,
-    primary key (user_id, role_id)
+    authority_id bigserial references authorities(id) on delete cascade,
+    primary key (user_id, authority_id)
 );

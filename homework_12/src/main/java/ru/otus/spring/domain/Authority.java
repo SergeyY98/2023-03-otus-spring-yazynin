@@ -16,8 +16,8 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "roles")
-public class Role implements GrantedAuthority {
+@Table(name = "authorities")
+public class Authority implements GrantedAuthority {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -25,7 +25,7 @@ public class Role implements GrantedAuthority {
   private String name;
 
   @Transient
-  @ManyToMany(mappedBy = "roles")
+  @ManyToMany(mappedBy = "authorities")
   private List<User> users;
 
   public Long getId() {

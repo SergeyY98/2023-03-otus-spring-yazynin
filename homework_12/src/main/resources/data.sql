@@ -45,4 +45,4 @@ VALUES (1, 1),   (1, 2),   (1, 3),
 INSERT INTO users (username, password)
 VALUES('admin','$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG');
 
-INSERT INTO roles (name) VALUES('ROLE_ADMIN');
+INSERT INTO authorities (name) VALUES('ROLE_ADMIN');

@@ -12,10 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 import java.util.List;
 
 @AllArgsConstructor
@@ -33,9 +30,9 @@ public class User implements UserDetails {
   private String password;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private List<Role> roles;
+  @JoinTable(name = "users_authorities", joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "authority_id"))
+  private List<Authority> authorities;
 
   @Override
   public String getPassword() {
@@ -68,8 +65,8 @@ public class User implements UserDetails {
   }
 
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return getRoles();
+  public List<Authority> getAuthorities() {
+    return this.authorities;
   }
 
   public Long getId() {
@@ -78,9 +75,5 @@ public class User implements UserDetails {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public List<Role> getRoles() {
-    return this.roles;
   }
 }
