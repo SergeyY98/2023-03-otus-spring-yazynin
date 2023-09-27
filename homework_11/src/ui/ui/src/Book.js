@@ -30,14 +30,12 @@ const Book = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    BookService.get(id).then((json) => setBook(json.data));
+    BookService.get(id).then((json) => setBook(json));
   }, []);
 
   const updateBook = () => {
-      const response = BookService.update(book);
-      if (response && response.data) {
-        navigate('/');
-      }
+      BookService.update(book);
+      navigate('/books');
   };
 
   const handleChange = (e) => {
@@ -122,38 +120,11 @@ const Book = () => {
             })}
             <Button intent="primary" onClick={() => addRow("authors")}>Add</Button>
         </div>
-        <h4>Genres</h4>
-        <div>
-            {book.genres.map((genre, index) => {
-                return (
-                <FormGroup>
-                     <FormInput
-                         type="text"
-                         value={genre.id}
-                         placeholder="Genre Id"
-                         label="Id"
-                         name="id"
-                     onChange={(e) => handleArrayChange(e, "genres", index)}
-                     />
-                    <FormInput
-                        type="text"
-                        value={genre.name}
-                        placeholder="Genre Name"
-                        label="Name"
-                        name="name"
-                    onChange={(e) => handleArrayChange(e, "genres", index)}
-                    />
-                    <Button intent="primary" onClick={() => deleteRow(index, "genres")}>Delete</Button>
-                </FormGroup>
-                );
-            })}
-            <Button intent="primary" onClick={() => addRow("genres")}>Add</Button>
-        </div>
         <div class="submit-btns">
             <Button intent="primary" onClick={() => updateBook()}>
                 Save
             </Button>
-            <Button intent="secondary" onClick={() => navigate('/')}>
+            <Button intent="secondary" onClick={() => navigate('/books')}>
                 Cancel
             </Button>
         </div>

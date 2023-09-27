@@ -1,25 +1,19 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const BookService = {
-    get: (id) =>
-        fetch(`api/books/${id}`)
-            .then((response) => response.json()),
-    getAll: () =>
-        fetch('api/books')
-          .then((response) => response.json()),
-    update: (book) =>
-        fetch(`/api/books`, {
-            method: "POST",
-            body: JSON.stringify(book),
+    get: async (id) =>
+        await axios.get(`api/books/${id}`),
+    getAll: async () =>
+        await axios.get('api/books'),
+    update: async (book) =>
+        await axios.post(`/api/books`, JSON.stringify(book), {
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
             }
         }),
-    deleteBook: (id) =>
-        fetch(`/api/books/${id}`, {
-            method: "DELETE",
-        })
+    deleteBook: async (id) =>
+        await axios.delete(`/api/books/${id}`)
 }
 
 export default BookService;

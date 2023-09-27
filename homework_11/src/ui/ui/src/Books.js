@@ -11,7 +11,7 @@ const AppToaster = Toaster.create({
   position: Position.TOP,
 })
 
-const App = () => {
+const Books = () => {
 
   const [books, setBooks] = useState([]);
 
@@ -34,7 +34,7 @@ const App = () => {
   useEffect(() => {
     setTimeout(() =>
         BookService.getAll()
-            .then((json) => setBooks(json.data)),
+            .then((json) => setBooks(json)),
     200)
   }, []);
 
@@ -46,7 +46,6 @@ const App = () => {
                     <th>ID</th>
                     <th>Name</th>
                     <th>Authors</th>
-                    <th>Genres</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -60,13 +59,8 @@ const App = () => {
                                 <li key={index}>{author.firstname} {author.lastname}</li>
                             );
                         })}</ul></td>
-                        <td><ul>{book.genres.map((genre, index) => {
-                            return (
-                                <li key={index}>{genre.name}</li>
-                            );
-                        })}</ul></td>
                         <td>
-                            <Button intent="primary" onClick={() => navigate(`${book.id}`)}>Update</Button>
+                            <Button intent="primary" onClick={() => navigate(`/books/${book.id}`)}>Update</Button>
                             &nbsp;
                             <Button intent="danger" onClick={() => deleteBook(book.id)}>
                                 Delete
@@ -76,9 +70,9 @@ const App = () => {
                 ))}
             </tbody>
         </table>
-        <Button intent="primary" onClick={() => navigate('/new')}>Add</Button>
+        <Button intent="primary" onClick={() => navigate('/books/new')}>Add</Button>
     </div>
   );
 };
 
-export default App;
+export default Books;
