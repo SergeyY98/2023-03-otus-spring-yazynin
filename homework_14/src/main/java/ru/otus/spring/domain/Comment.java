@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +27,7 @@ public class Comment {
   @Column(name = "text", nullable = false)
   private String text;
 
-  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+  @ManyToOne(cascade = CascadeType.MERGE)
   @JoinColumn(name = "book_id")
   private Book book;
 

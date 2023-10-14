@@ -42,9 +42,9 @@ public class BookServiceImpl implements BookService {
   public String findAll() {
     return bookRepository.findAll().stream()
         .map(b -> b.getId() + " " + b.getName() + "\n" + "Authors:\n" +
-            b.getAuthors().stream().map(a -> a.getFirstname() + " " + a.getLastname())
+            b.getAuthors().stream().map(a -> a.getId() + " " + a.getFirstname() + " " + a.getLastname())
                 .collect(Collectors.joining("\n")) +
-            "\nGenres:\n" + b.getGenres().stream().map(GenreMongo::getName)
+            "\nGenres:\n" + b.getGenres().stream().map(g -> g.getId() + " " + g.getName())
             .collect(Collectors.joining("\n"))).collect(Collectors.joining("\n"));
   }
 
