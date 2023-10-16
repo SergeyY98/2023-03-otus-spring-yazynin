@@ -19,7 +19,7 @@ public class CustomHealthIndicator implements HealthIndicator {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     String username = ((UserDetails)principal).getUsername();
 
-    if (username == "admin") {
+    if (username.equals("admin")) {
       return Health.up()
           .withDetail("message", "Верный пользователь")
           .build();
