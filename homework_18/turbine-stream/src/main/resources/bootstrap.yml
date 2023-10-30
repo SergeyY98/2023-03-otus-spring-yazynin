@@ -1,0 +1,31 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  application:
+    name: turbine-stream
+  rabbitmq:
+    host: 10.0.1.16
+    port: 5672
+
+server:
+  port: 8989
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8001/eureka
+  instance:
+    prefer-ip-address: true
+    leaseRenewalIntervalInSeconds: 30
+    leaseExpirationDurationInSeconds: 30
+    instance-id: ${spring.application.name}:${server.port}
+
+turbine:
+  appConfig: homework_18
+  clusterNameExpression: new String('default')
