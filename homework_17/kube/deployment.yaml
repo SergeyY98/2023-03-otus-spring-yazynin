@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: library
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: library
+    spec:
+      containers:
+        - image: registry.gitlab.com/sergey.yazynin.98/library/container_registry/library:latest
+          name: library
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8090
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8090
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            initialDelaySeconds: 10
+        - image: postgres:13
+          name: postgres
+          ports:
+            - containerPort: 5432
+
+      imagePullSecrets:
+        - name: regcred

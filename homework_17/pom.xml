@@ -7,7 +7,7 @@
     <groupId>ru.otus.spring</groupId>
     <artifactId>homework_17</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>homework_17</name>
+    <name>library</name>
     <description>Project for Spring MVC docker app</description>
 
     <parent>
@@ -108,6 +108,23 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <from>
+                        <image>bellsoft/liberica-openjdk-alpine-musl:17.0.2-9</image>
+                    </from>
+                    <to>
+                        <auth>
+                            <username>${env.GITLAB_USERNAME}</username>
+                            <password>${env.GITLAB_PASSWORD}</password>
+                        </auth>
+                        <image>registry.gitlab.com/sergey.yazynin.98/library/container_registry/${project.name}</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>
