@@ -16,7 +16,7 @@ public class ReplyMessagesService {
   }
 
   public SendMessage getReplyMessage(String chatId, String replyMessage) {
-    return new SendMessage(chatId, replyMessage);
+    return new SendMessage(chatId, messageService.getMessage(replyMessage));
   }
 
   public SendMessage getReplyMessage(String chatId, String replyMessage, String... args) {
@@ -26,14 +26,6 @@ public class ReplyMessagesService {
 
   public SendMessage getSuccessReplyMessage(String chatId, String replyMessage) {
     return new SendMessage(chatId, getEmojiReplyText(replyMessage, Emojis.SUCCESS_MARK));
-  }
-
-  public SendMessage getWarningReplyMessage(String chatId, String replyMessage) {
-    return new SendMessage(chatId, getEmojiReplyText(replyMessage, Emojis.NOTIFICATION_MARK_FAILED));
-  }
-
-  public String getReplyText(String replyText) {
-    return messageService.getMessage(replyText);
   }
 
   public String getReplyText(String replyText, String... args) {

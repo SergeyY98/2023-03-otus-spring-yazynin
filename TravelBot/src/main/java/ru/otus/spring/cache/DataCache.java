@@ -11,7 +11,7 @@ public interface DataCache {
 
   BotState getUsersCurrentBotState(long userId);
 
-  void saveFlightSearchData(long userId, LinkedMultiValueMap<String, String> FlightSearchData);
+  void saveFlightSearchData(long userId, LinkedMultiValueMap<String, String> flightSearchData);
 
   LinkedMultiValueMap<String, String> getUserFlightSearchData(long userId);
 

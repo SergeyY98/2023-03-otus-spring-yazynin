@@ -14,7 +14,9 @@ import java.util.Objects;
 @Service
 public class UserDataCache implements DataCache {
   private final Map<Long, BotState> usersBotStates = new HashMap<>();
+
   private final Map<Long, LinkedMultiValueMap<String, String>> flightSearchUsersData = new HashMap<>();
+
   private final Map<Long, List<Flight>> searchFoundedFlights = new HashMap<>();
 
   @Override
@@ -33,18 +35,18 @@ public class UserDataCache implements DataCache {
   }
 
   @Override
-  public void saveFlightSearchData(long userId, LinkedMultiValueMap<String, String> FlightSearchData) {
-    flightSearchUsersData.put(userId, FlightSearchData);
+  public void saveFlightSearchData(long userId, LinkedMultiValueMap<String, String> flightSearchData) {
+    flightSearchUsersData.put(userId, flightSearchData);
   }
 
   @Override
   public LinkedMultiValueMap<String, String> getUserFlightSearchData(long userId) {
-    LinkedMultiValueMap<String, String> FlightSearchData = flightSearchUsersData.get(userId);
-    if (FlightSearchData == null) {
-      FlightSearchData = new LinkedMultiValueMap<String, String>();
+    LinkedMultiValueMap<String, String> flightSearchData = flightSearchUsersData.get(userId);
+    if (flightSearchData == null) {
+      flightSearchData = new LinkedMultiValueMap<>();
     }
 
-    return FlightSearchData;
+    return flightSearchData;
   }
 
   @Override

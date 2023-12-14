@@ -5,16 +5,15 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum Emojis {
+  ALARM_CLOCK(EmojiParser.parseToUnicode(":alarm_clock:")),
+  ARROW_RIGHT(EmojiParser.parseToUnicode(":arrow_right:")),
   PLAIN_DEPARTURE(EmojiParser.parseToUnicode(":airplane_departure:")),
   PLAIN_ARRIVAL(EmojiParser.parseToUnicode(":airplane_arrival:")),
-  TIME_DEPART(EmojiParser.parseToUnicode(":clock8:")),
-  TIME_ARRIVAL(EmojiParser.parseToUnicode(":clock3:")),
+  INFORMATION_SOURCE(EmojiParser.parseToUnicode(":information_source:")),
   SUCCESS_MARK(EmojiParser.parseToUnicode(":white_check_mark:")),
-  NOTIFICATION_MARK_FAILED(EmojiParser.parseToUnicode(":exclamation:")),
-  SUCCESS_UNSUBSCRIBED(EmojiParser.parseToUnicode(":negative_squared_cross_mark:")),
-  SUCCESS_SUBSCRIBED(EmojiParser.parseToUnicode(":mailbox:")),
-  NOTIFICATION_BELL(EmojiParser.parseToUnicode(":bell:")),
-  NOTIFICATION_PRICE_DOWN(EmojiParser.parseToUnicode(":chart_with_downwards_trend:"));
+  NOTIFICATION_MARK(EmojiParser.parseToUnicode(":exclamation:")),
+  DATE(EmojiParser.parseToUnicode(":date:")),
+  MONEY(EmojiParser.parseToUnicode(":moneybag:"));
 
   private String emojiName;
 

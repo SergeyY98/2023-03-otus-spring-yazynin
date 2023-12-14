@@ -1,7 +1,5 @@
 package ru.otus.spring.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.otus.spring.dto.Airport;
 
 @Getter
 @Setter
@@ -22,6 +19,7 @@ import ru.otus.spring.dto.Airport;
 public class Segment {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   private String departureCityName;
@@ -31,4 +29,12 @@ public class Segment {
   private String departureTime;
 
   private String arrivalTime;
+
+  public Segment(String departureCityName, String arrivalCityName,
+                                 String departureTime, String arrivalTime) {
+    this.departureCityName = departureCityName;
+    this.arrivalCityName = arrivalCityName;
+    this.departureTime = departureTime;
+    this.arrivalTime = arrivalTime;
+  }
 }

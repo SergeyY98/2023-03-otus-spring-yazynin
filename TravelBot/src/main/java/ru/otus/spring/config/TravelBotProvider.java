@@ -6,4 +6,10 @@ public interface TravelBotProvider {
   String getBotToken();
 
   String getWebhookPath();
+
+  void setBotName(String botName);
+
+  void setBotToken(String botToken);
+
+  void setWebhookPath(String webhookPath);
 }

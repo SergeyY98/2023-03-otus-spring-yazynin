@@ -7,7 +7,6 @@ import ru.otus.spring.domain.FlightSubscription;
 import ru.otus.spring.repository.FlightSubscriptionRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,16 +27,16 @@ public class FlightSubscriptionService {
     subscriptionsRepository.save(flightSubscription);
   }
 
-  public void deleteUserSubscription(String token) {
-    subscriptionsRepository.deleteByToken(token);
+  public void deleteUserSubscription(FlightSubscription flightSubscription) {
+    subscriptionsRepository.delete(flightSubscription);
   }
 
   public boolean hasTicketsSubscription(FlightSubscription userSubscription) {
-    return !subscriptionsRepository.findByToken(userSubscription.getToken()).isEmpty();
+    return !subscriptionsRepository.findByOfferKeyToHighlight(userSubscription.getOfferKeyToHighlight()).isEmpty();
   }
 
-  public Optional<FlightSubscription> getUsersSubscriptionByToken(String token) {
-    return subscriptionsRepository.findByToken(token);
+  public List<FlightSubscription> getUsersSubscriptionByOfferKeyToHighlight(String offerKeyToHighlight) {
+    return subscriptionsRepository.findByOfferKeyToHighlight(offerKeyToHighlight);
   }
 
   public List<FlightSubscription> getUsersSubscriptions(long chatId) {

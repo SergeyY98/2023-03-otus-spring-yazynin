@@ -9,12 +9,16 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.otus.spring.cache.UserDataCache;
 import ru.otus.spring.telegram.handlers.callbackquery.CallbackQueryFacade;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 public class TelegramFacade {
-  private UserDataCache userDataCache;
-  private BotStateContext botStateContext;
-  private CallbackQueryFacade callbackQueryFacade;
+  private final UserDataCache userDataCache;
+
+  private final BotStateContext botStateContext;
+
+  private final CallbackQueryFacade callbackQueryFacade;
 
   @Autowired
   public TelegramFacade(UserDataCache userDataCache, BotStateContext botStateContext,
@@ -45,14 +49,12 @@ public class TelegramFacade {
   private SendMessage handleInputMessage(Message message) {
     String inputMsg = message.getText();
     long userId = message.getFrom().getId();
-    BotState botState;
+    BotState botState = userDataCache.getUsersCurrentBotState(userId);
     SendMessage replyMessage;
 
-    botState = switch (inputMsg) {
-      case "Найти рейсы" -> BotState.FLIGHTS_SEARCH;
-      case "Мои подписки" -> BotState.SHOW_SUBSCRIPTIONS_MENU;
-      default -> userDataCache.getUsersCurrentBotState(userId);
-    };
+    if (Objects.equals(inputMsg, "Мои подписки")) {
+      botState = BotState.SHOW_SUBSCRIPTIONS_MENU;
+    }
 
     userDataCache.setUsersCurrentBotState(userId, botState);
 
@@ -60,6 +62,4 @@ public class TelegramFacade {
 
     return replyMessage;
   }
-
-
 }

@@ -11,6 +11,7 @@ import ru.otus.spring.telegram.handlers.InputMessageHandler;
 @Component
 public class MainMenuHandler implements InputMessageHandler {
   private final ReplyMessagesService messagesService;
+
   private final MainMenuService mainMenuService;
 
   public MainMenuHandler(ReplyMessagesService messagesService, MainMenuService mainMenuService) {

@@ -16,12 +16,9 @@ import java.util.Currency;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Price {
 
-  @JsonProperty("key")
+  @JsonProperty("currencyCode")
   private Currency currencyCode;
 
   @JsonProperty("units")
   private Integer units;
-
-  @JsonProperty("nanos")
-  private Integer nanos;
 }

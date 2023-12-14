@@ -20,6 +20,7 @@ import java.util.List;
 public class WebhookController {
 
   private final TravelBot travelBot;
+
   private final FlightSubscriptionService subscriptionService;
 
   @PostMapping("/")

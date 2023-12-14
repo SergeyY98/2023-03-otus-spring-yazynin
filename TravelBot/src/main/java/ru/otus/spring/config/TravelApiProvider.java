@@ -6,4 +6,10 @@ public interface TravelApiProvider {
   String getApiKey();
 
   String getApiHost();
+
+  void setApiUrl(String apiUrl);
+
+  void setApiKey(String apiKey);
+
+  void setApiHost(String apiHost);
 }

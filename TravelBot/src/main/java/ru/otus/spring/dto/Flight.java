@@ -24,4 +24,7 @@ public class Flight {
 
   @JsonProperty("priceBreakdown")
   private PriceBreakdown priceBreakdown;
+
+  @JsonProperty("offerKeyToHighlight")
+  private String offerKeyToHighlight;
 }

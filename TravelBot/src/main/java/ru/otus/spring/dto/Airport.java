@@ -2,7 +2,6 @@ package ru.otus.spring.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,27 +12,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Embeddable
 public class Airport {
 
   @JsonProperty("type")
-  String type;
+  private String type;
 
   @JsonProperty("code")
-  String code;
+  private String code;
 
   @JsonProperty("city")
-  String city;
+  private String city;
 
   @JsonProperty("cityName")
-  String cityName;
+  private String cityName;
 
   @JsonProperty("country")
-  String country;
+  private String country;
 
   @JsonProperty("countryName")
-  String countryName;
+  private String countryName;
 
   @JsonProperty("name")
-  String name;
+  private String name;
 }

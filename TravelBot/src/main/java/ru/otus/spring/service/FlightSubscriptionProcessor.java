@@ -6,29 +6,27 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import ru.otus.spring.dto.Flight;
 import ru.otus.spring.domain.FlightSubscription;
+import ru.otus.spring.dto.ResponseDetails;
 import ru.otus.spring.telegram.TravelBot;
 import ru.otus.spring.utils.Emojis;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Slf4j
 @Service
 public class FlightSubscriptionProcessor {
-  private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
   private final FlightSubscriptionService subscriptionService;
+
   private final FlightSearchService flightSearchService;
+
   private final ReplyMessagesService messageService;
+
   private final TravelBot travelBot;
 
   @Autowired
   public FlightSubscriptionProcessor(FlightSubscriptionService subscriptionService,
                                         FlightSearchService flightSearchService,
                                         ReplyMessagesService messageService,
-                                        TravelBot travelBot) {
+                                        @Lazy TravelBot travelBot) {
     this.subscriptionService = subscriptionService;
     this.flightSearchService = flightSearchService;
     this.messageService = messageService;
@@ -52,24 +50,23 @@ public class FlightSubscriptionProcessor {
    * если цена изменилась сохраняет последнюю и уведомляет клиента.
    */
   private void processSubscription(FlightSubscription subscription) {
-    Mono<Flight> actualFlight = flightSearchService.getFlightDetails(subscription.getToken());
+    Mono<ResponseDetails> actualFlight = flightSearchService.getFlightDetails(subscription.getToken());
+    actualFlight.subscribe(flight -> {
+      log.info("Получил данные по билетам {} по токену {}", flight, subscription.getToken());
+      if ((double)flight.getData().getPriceBreakdown().getTotal().getUnits() /
+          subscription.getPriceBreakdown().getTotal().getUnits() <= 0.9) {
+        String notificationMessage = messageService.getReplyText("subscription.flightTicketsPriceChanges",
+            Emojis.NOTIFICATION_MARK.toString(), subscription.getOfferKeyToHighlight(),
+            subscription.getPriceBreakdown().getTotal().getUnits().toString(), Emojis.ARROW_RIGHT.toString(),
+            flight.getData().getPriceBreakdown().getTotal().getUnits().toString(),
+            subscription.getPriceBreakdown().getTotal().getCurrencyCode().toString());
+
+        subscription.setPriceBreakdown(flight.getData().getPriceBreakdown());
+        subscriptionService.saveUserSubscription(subscription);
+
+        travelBot.sendMessage(subscription.getChatId(), notificationMessage);
+      }
+    });
     subscriptionService.saveUserSubscription(subscription);
-
-    String notificationMessage = messageService.getReplyText("subscription.flightTicketsPriceChanges",
-        Emojis.NOTIFICATION_BELL.toString(), subscription.getSegments().get(0).getDepartureCityName(),
-        subscription.getSegments().get(0).getArrivalCityName(), subscription.getSegments().get(0).getDepartureTime(),
-        subscription.getSegments().get(0).getArrivalTime()) + messageService.getReplyText("subscription.lastTicketPrices");
-
-    travelBot.sendMessage(subscription.getChatId(), notificationMessage);
-  }
-
-  private Date parseDateDeparture(String dateDeparture) {
-    Date dateDepart = null;
-    try {
-      dateDepart = DATE_FORMAT.parse(dateDeparture);
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    return dateDepart;
   }
 }

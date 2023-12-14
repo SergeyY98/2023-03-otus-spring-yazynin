@@ -1,14 +1,10 @@
 package ru.otus.spring.config;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
-@Component
-@ConfigurationProperties(prefix = "telegram")
-@Data
+@ConfigurationProperties(prefix = "application")
 public class AppProps implements TravelApiProvider, TravelBotProvider, LocaleProvider {
   private String apiUrl;
 
@@ -59,6 +55,36 @@ public class AppProps implements TravelApiProvider, TravelBotProvider, LocalePro
   @Override
   public Locale getLocale() {
     return locale;
+  }
+
+  @Override
+  public void setApiUrl(String apiUrl) {
+    this.apiUrl = apiUrl;
+  }
+
+  @Override
+  public void setApiKey(String apiKey) {
+    this.apiKey = apiKey;
+  }
+
+  @Override
+  public void setApiHost(String apiHost) {
+    this.apiHost = apiHost;
+  }
+
+  @Override
+  public void setBotName(String botName) {
+    this.botName = botName;
+  }
+
+  @Override
+  public void setBotToken(String botToken) {
+    this.botToken = botToken;
+  }
+
+  @Override
+  public void setWebhookPath(String webhookPath) {
+    this.webhookPath = webhookPath;
   }
 
   @Override

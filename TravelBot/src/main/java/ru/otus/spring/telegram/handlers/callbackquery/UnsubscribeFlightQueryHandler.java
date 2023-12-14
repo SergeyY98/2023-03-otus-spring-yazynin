@@ -1,5 +1,6 @@
 package ru.otus.spring.telegram.handlers.callbackquery;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -7,51 +8,61 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.otus.spring.domain.FlightSubscription;
 import ru.otus.spring.service.FlightSubscriptionService;
+import ru.otus.spring.service.ParseQueryDataService;
 import ru.otus.spring.service.ReplyMessagesService;
 import ru.otus.spring.telegram.TravelBot;
 import ru.otus.spring.utils.Emojis;
 
-import java.util.Optional;
+import java.util.List;
 
+@Slf4j
 @Component
 public class UnsubscribeFlightQueryHandler implements CallbackQueryHandler {
-  private static final CallbackQueryType HANDLER_QUERY_TYPE = CallbackQueryType.UNSUBSCRIBE;
   private final FlightSubscriptionService subscriptionService;
+
+  private final ParseQueryDataService parseService;
+
   private final ReplyMessagesService messagesService;
+
   private final TravelBot travelBot;
 
   @Autowired
   public UnsubscribeFlightQueryHandler(FlightSubscriptionService subscriptionService,
-                                            ReplyMessagesService messagesService,
-                                            @Lazy TravelBot travelBot) {
+                                       ParseQueryDataService parseService,
+                                       ReplyMessagesService messagesService,
+                                       @Lazy TravelBot travelBot) {
     this.subscriptionService = subscriptionService;
+    this.parseService = parseService;
     this.messagesService = messagesService;
     this.travelBot = travelBot;
   }
 
   @Override
   public CallbackQueryType getHandlerQueryType() {
-    return HANDLER_QUERY_TYPE;
+    return CallbackQueryType.UNSUBSCRIBE;
   }
 
   @Override
   public SendMessage handleCallbackQuery(CallbackQuery callbackQuery) {
     final long chatId = callbackQuery.getMessage().getChatId();
 
-    final String token = callbackQuery.getData();
-    Optional<FlightSubscription> optionalUserSubscription = subscriptionService.getUsersSubscriptionByToken(token);
-    if (optionalUserSubscription.isEmpty()) {
+    final String offerKeyToHighlight = parseService.parseOfferKeyToHighlightSubscribeQuery(callbackQuery);
+    List<FlightSubscription> flightSubscriptions = subscriptionService
+        .getUsersSubscriptionByOfferKeyToHighlight(offerKeyToHighlight);
+    log.info("Отписка от рейса {}", offerKeyToHighlight);
+    if (flightSubscriptions.isEmpty()) {
       return messagesService.getReplyMessage(String.valueOf(chatId), "reply.query.flight.userHasNoSubscription");
     }
 
-    FlightSubscription userSubscription = optionalUserSubscription.get();
-    subscriptionService.deleteUserSubscription(token);
+    FlightSubscription flightSubscription = flightSubscriptions.get(0);
+    subscriptionService.deleteUserSubscription(flightSubscription);
 
-    travelBot.sendChangedInlineButtonText(callbackQuery,
-        String.format("%s %s", Emojis.SUCCESS_UNSUBSCRIBED, UserChatButtonStatus.UNSUBSCRIBED),
-        CallbackQueryType.QUERY_PROCESSED.name());
+    String subscriptionButtonText = String.format("%s %s", Emojis.ALARM_CLOCK, UserChatButtonStatus.UNSUBSCRIBED);
+    String subscriptionInfoData = String.format("%s|%s", CallbackQueryType.SUBSCRIBE.name(), offerKeyToHighlight);
+    travelBot.sendChangedInlineButtonText(callbackQuery, subscriptionButtonText, subscriptionInfoData);
 
-    return messagesService.getReplyMessage(String.valueOf(chatId), "Удалена подписка на рейс.");
+    return messagesService.getReplyMessage(String.valueOf(chatId), "reply.query.flight.unsubscribed",
+        offerKeyToHighlight.split("_")[1]);
   }
 
 

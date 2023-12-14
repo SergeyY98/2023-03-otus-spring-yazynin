@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum UserChatButtonStatus {
-  SUBSCRIBED("Подписался"), UNSUBSCRIBED("Отписался");
+  SUBSCRIBED("Отписаться"), UNSUBSCRIBED("Подписаться");
 
   private String buttonStatus;
 

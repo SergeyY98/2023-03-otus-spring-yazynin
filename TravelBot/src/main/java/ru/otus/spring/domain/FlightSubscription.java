@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.Id;
 import ru.otus.spring.dto.PriceBreakdown;
-import ru.otus.spring.dto.SegmentDto;
 
 import java.util.List;
 
@@ -30,15 +28,29 @@ import java.util.List;
 public class FlightSubscription {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   private String token;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  private String offerKeyToHighlight;
+
+  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @JoinTable(name = "flight_subscriptions_segments", joinColumns = @JoinColumn(name = "flight_subscription_id"),
+      inverseJoinColumns = @JoinColumn(name = "segment_id"))
   private List<Segment> segments;
 
   @Embedded
   private PriceBreakdown priceBreakdown;
 
   private long chatId;
+
+  public FlightSubscription(String token, String offerKeyToHighlight, List<Segment> segments,
+                            PriceBreakdown priceBreakdown, long chatId) {
+    this.token = token;
+    this.offerKeyToHighlight = offerKeyToHighlight;
+    this.segments = segments;
+    this.priceBreakdown = priceBreakdown;
+    this.chatId = chatId;
+  }
 }
