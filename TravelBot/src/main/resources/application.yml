@@ -17,10 +17,10 @@ spring:
 application:
   apiUrl: "/api/v1/flights"
   apiKey: "{apiKey}"
-  apiHost: "booking-com15.p.rapidapi.com"
+  apiHost: "{apiHost}"
   userName: "flights_searching_monitoring_bot"
   botToken: "{botToken}"
-  webHookPath: "https://a7ed-5-167-94-241.ngrok-free.app"
+  webHookPath: "https://8cac-5-167-94-241.ngrok-free.app"
   locale: ru_RU
 
 subscriptions:

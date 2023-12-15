@@ -1,7 +1,6 @@
 package ru.otus.spring.cache;
 
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import ru.otus.spring.dto.Flight;
 import ru.otus.spring.telegram.BotState;
 
@@ -14,8 +13,6 @@ import java.util.Objects;
 @Service
 public class UserDataCache implements DataCache {
   private final Map<Long, BotState> usersBotStates = new HashMap<>();
-
-  private final Map<Long, LinkedMultiValueMap<String, String>> flightSearchUsersData = new HashMap<>();
 
   private final Map<Long, List<Flight>> searchFoundedFlights = new HashMap<>();
 
@@ -32,21 +29,6 @@ public class UserDataCache implements DataCache {
     }
 
     return botState;
-  }
-
-  @Override
-  public void saveFlightSearchData(long userId, LinkedMultiValueMap<String, String> flightSearchData) {
-    flightSearchUsersData.put(userId, flightSearchData);
-  }
-
-  @Override
-  public LinkedMultiValueMap<String, String> getUserFlightSearchData(long userId) {
-    LinkedMultiValueMap<String, String> flightSearchData = flightSearchUsersData.get(userId);
-    if (flightSearchData == null) {
-      flightSearchData = new LinkedMultiValueMap<>();
-    }
-
-    return flightSearchData;
   }
 
   @Override

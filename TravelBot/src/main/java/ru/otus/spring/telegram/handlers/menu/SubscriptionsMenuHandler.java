@@ -40,7 +40,7 @@ public class SubscriptionsMenuHandler implements InputMessageHandler {
   public SendMessage handle(Message message) {
     List<FlightSubscription> usersSubscriptions = subscribeService.getUsersSubscriptions(message.getChatId());
     if (usersSubscriptions.isEmpty()) {
-      userDataCache.setUsersCurrentBotState(message.getFrom().getId(), BotState.SHOW_MAIN_MENU);
+      userDataCache.setUsersCurrentBotState(message.getFrom().getId(), BotState.FLIGHTS_SEARCH);
       return messageService.getReplyMessage(message.getChatId().toString(),
           "reply.subscriptions.userHasNoSubscriptions");
     }
@@ -58,7 +58,7 @@ public class SubscriptionsMenuHandler implements InputMessageHandler {
       travelBot.sendInlineKeyBoardMessage(message.getChatId(), subscriptionInfo,
           Emojis.ALARM_CLOCK + " Отписаться", unsubscribeData);
     }
-    userDataCache.setUsersCurrentBotState(message.getFrom().getId(), BotState.SHOW_MAIN_MENU);
+    userDataCache.setUsersCurrentBotState(message.getFrom().getId(), BotState.FLIGHTS_SEARCH);
 
     return messageService.getSuccessReplyMessage(message.getChatId().toString(), "reply.subscriptions.listLoaded");
   }

@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
+import org.springframework.util.LinkedMultiValueMap;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import reactor.core.publisher.Mono;
@@ -55,9 +55,8 @@ public class FlightSearchHandler implements InputMessageHandler {
     String usersAnswer = message.getText();
     long chatId = message.getChatId();
     long userId = message.getFrom().getId();
-    log.info("Поиск рейсов по заданным критериям chatId: {}, userId: {}, usersAnswer: {}", chatId, userId, usersAnswer);
     SendMessage replyToUser = messageService.getReplyMessage(String.valueOf(chatId), "reply.query.failed");
-    MultiValueMap<String, String> requestData = userDataCache.getUserFlightSearchData(userId);
+    LinkedMultiValueMap<String, String> requestData = new LinkedMultiValueMap<>();
 
     BotState botState = userDataCache.getUsersCurrentBotState(userId);
     if (botState.equals(BotState.FLIGHTS_SEARCH)) {
@@ -65,12 +64,14 @@ public class FlightSearchHandler implements InputMessageHandler {
       if (mainParams.length < 3) {
         return messageService.getReplyMessage(String.valueOf(chatId), "reply.flightSearch.wrongInputFormat");
       }
+
       requestData.add("fromId", mainParams[0]);
       requestData.add("toId", mainParams[1]);
       requestData.add("departDate", mainParams[2]);
+
       Mono<Response> data = flightSearchService.getFlightsList(requestData).cache(Duration.ofHours(1));
       sendFlightsInfoService.sendFlightInfo(chatId, data);
-      userDataCache.setUsersCurrentBotState(userId, BotState.SHOW_MAIN_MENU);
+      userDataCache.setUsersCurrentBotState(userId, BotState.FLIGHTS_SEARCH);
       replyToUser = messageService.getReplyMessage(String.valueOf(chatId), "reply.query.flight.finished");
     }
     return replyToUser;

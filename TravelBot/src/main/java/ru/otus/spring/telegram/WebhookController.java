@@ -30,7 +30,7 @@ public class WebhookController {
   }
 
   @GetMapping(value = "/subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<FlightSubscription> index() {
+  public List<FlightSubscription> subscriptions() {
     return subscriptionService.getAllSubscriptions();
   }
 }

@@ -25,15 +25,13 @@ public class BotStateContext {
     log.info("New message from User {}, chatId: {}, with text: {}",
         message.getFrom().getUserName(), message.getChatId(), message.getText());
     InputMessageHandler currentMessageHandler = findMessageHandler(currentState);
-    log.info("For User {} was picked handler {} with state {}",
-        message.getFrom().getUserName(), currentMessageHandler, currentState);
     return currentMessageHandler.handle(message);
   }
 
 
   private InputMessageHandler findMessageHandler(BotState currentState) {
     return switch (currentState) {
-      case FLIGHTS_SEARCH, ASK_SEARCH_PARAMS -> messageHandlers.get(BotState.FLIGHTS_SEARCH);
+      case FLIGHTS_SEARCH -> messageHandlers.get(BotState.FLIGHTS_SEARCH);
       default -> messageHandlers.get(currentState);
     };
   }

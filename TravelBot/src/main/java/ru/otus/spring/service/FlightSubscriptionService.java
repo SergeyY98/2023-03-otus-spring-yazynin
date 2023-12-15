@@ -31,10 +31,6 @@ public class FlightSubscriptionService {
     subscriptionsRepository.delete(flightSubscription);
   }
 
-  public boolean hasTicketsSubscription(FlightSubscription userSubscription) {
-    return !subscriptionsRepository.findByOfferKeyToHighlight(userSubscription.getOfferKeyToHighlight()).isEmpty();
-  }
-
   public List<FlightSubscription> getUsersSubscriptionByOfferKeyToHighlight(String offerKeyToHighlight) {
     return subscriptionsRepository.findByOfferKeyToHighlight(offerKeyToHighlight);
   }
